@@ -50,6 +50,9 @@ HandImpl::Remove(size_t idx)
 
 } // namespace
 
+Hand::~Hand()
+{/* Empty. */}
+
 std::unique_ptr<Hand>
 Hand::New()
 {

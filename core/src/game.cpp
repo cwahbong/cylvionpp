@@ -221,6 +221,9 @@ GameImpl::Run()
 
 } // namespace
 
+Game::~Game()
+{/* Empty. */}
+
 std::unique_ptr<Game>
 Game::New(
         std::shared_ptr<Actor> actor,

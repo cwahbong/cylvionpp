@@ -6,6 +6,8 @@ namespace core {
 
 class Stack {
 public:
+    virtual ~Stack() = 0;
+
     virtual bool Empty() const = 0;
     virtual unsigned Size() const = 0;
 

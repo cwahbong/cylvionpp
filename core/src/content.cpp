@@ -51,6 +51,9 @@ ContentImpl::ContentImpl():
 
 } // namespace
 
+Content::~Content()
+{/* Empty. */}
+
 std::unique_ptr<Content>
 Content::New()
 {

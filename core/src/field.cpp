@@ -79,6 +79,9 @@ FieldImpl::Remove(size_t row, size_t col)
 
 } // namespace
 
+Field::~Field()
+{/* Empty. */}
+
 std::unique_ptr<Field>
 Field::New()
 {

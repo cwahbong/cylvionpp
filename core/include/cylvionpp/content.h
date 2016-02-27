@@ -12,6 +12,8 @@ class Stack;
 
 class Content {
 public:
+    virtual ~Content() = 0;
+
     virtual unsigned GetEdge() const = 0;
     virtual void SetEdge(unsigned) = 0;
 

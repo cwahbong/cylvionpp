@@ -11,6 +11,8 @@ class Card;
 
 class Hand {
 public:
+    virtual ~Hand() = 0;
+
     virtual size_t Size() const = 0;
 
     virtual const std::unique_ptr<Card> & Peek(size_t idx) const = 0;

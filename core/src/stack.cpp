@@ -73,8 +73,11 @@ StackImpl::Shuffle()
 
 } // namespace
 
+Stack::~Stack()
+{/* Empty. */}
+
 std::unique_ptr<Stack>
-New()
+Stack::New()
 {
     return std::make_unique<StackImpl>();
 }

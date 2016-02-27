@@ -11,6 +11,8 @@ class Actor;
 
 class Card {
 public:
+    virtual ~Card() = 0;
+
     virtual unsigned GetCost() const = 0;
     virtual unsigned GetStrength() const = 0;
     virtual unsigned GetVitality() const = 0;

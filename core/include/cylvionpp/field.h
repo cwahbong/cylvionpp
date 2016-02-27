@@ -11,6 +11,8 @@ class Stack;
 
 class Field {
 public:
+    virtual ~Field() = 0;
+
     virtual bool Empty() const = 0;
 
     virtual const std::unique_ptr<Card> & Peek(size_t row, size_t col) const = 0;

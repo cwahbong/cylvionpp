@@ -124,6 +124,9 @@ private:
 
 } // namespace
 
+Card::~Card()
+{/* Empty. */}
+
 std::unique_ptr<Card>
 Card::NewElemental(unsigned strength, unsigned enhancedStrength)
 {
