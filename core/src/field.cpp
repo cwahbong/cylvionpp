@@ -13,6 +13,8 @@ namespace {
 
 class FieldImpl: public Field {
 public:
+    FieldImpl();
+
     bool Empty() const override;
 
     const std::unique_ptr<Card> & Peek(size_t row, size_t col) const override;
@@ -28,7 +30,17 @@ private:
     static bool RowEmpty(const Row &);
 
     std::array<Row, 4> c;
+    std::array<std::unique_ptr<Stack>, 4> s;
 };
+
+FieldImpl::FieldImpl():
+    c(),
+    s()
+{
+    for (auto && stack: s) {
+        stack = Stack::New();
+    }
+}
 
 bool
 FieldImpl::RowEmpty(const FieldImpl::Row & row)
@@ -75,6 +87,19 @@ FieldImpl::Remove(size_t row, size_t col)
         throw std::logic_error("Remove null card.");
     }
     return std::move(c[row][col]);
+}
+
+const Stack &
+FieldImpl::GetRavageStack(size_t row) const
+{
+    return *s[row];
+}
+
+
+Stack &
+FieldImpl::GetRavageStack(size_t row)
+{
+    return const_cast<Stack &>(static_cast<const FieldImpl *>(this)->GetRavageStack(row));
 }
 
 } // namespace
