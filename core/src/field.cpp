@@ -17,7 +17,7 @@ public:
 
     bool Empty() const override;
 
-    const std::unique_ptr<Card> & Peek(size_t row, size_t col) const override;
+    const Card & Peek(size_t row, size_t col) const override;
     bool Put(size_t row, size_t col, std::unique_ptr<Card> &&) override;
     bool Move(size_t row, size_t col, size_t to_row, size_t toCol) override;
     std::unique_ptr<Card> Remove(size_t row, size_t col) override;
@@ -31,11 +31,13 @@ private:
 
     std::array<Row, 4> c;
     std::array<std::unique_ptr<Stack>, 4> s;
+    std::unique_ptr<Card> e;
 };
 
 FieldImpl::FieldImpl():
     c(),
-    s()
+    s(),
+    e(Card::NewNone())
 {
     for (auto && stack: s) {
         stack = Stack::New();
@@ -54,10 +56,11 @@ FieldImpl::Empty() const
     return std::all_of(c.begin(), c.end(), FieldImpl::RowEmpty);
 }
 
-const std::unique_ptr<Card> &
+const Card &
 FieldImpl::Peek(size_t row, size_t col) const
 {
-    return c[row][col];
+    const auto & peeked = c[row][col];
+    return peeked ? *peeked : *e;
 }
 
 bool
@@ -111,6 +114,31 @@ std::unique_ptr<Field>
 Field::New()
 {
     return std::make_unique<FieldImpl>();
+}
+
+void
+Field::MoveElemental(Field & field, size_t fromRow, size_t fromCol,
+                     size_t toRow, size_t toCol)
+{
+    const auto & movingCard = field.Peek(fromRow, fromCol);
+    if (!movingCard.IsRavage()) {
+        throw std::logic_error("should be an elemental");
+    }
+    bool elementalAlive = true;
+    const auto & destCard = field.Peek(toRow, toCol);
+    if (destCard.IsCylvan()) {
+        if (movingCard.GetStrength() <= destCard.GetStrength()) {
+            elementalAlive = false;
+        }
+        if (movingCard.GetStrength() >= destCard.GetStrength()) {
+            field.Remove(toRow, toCol);
+        }
+    }
+    if (elementalAlive) {
+        field.Move(fromRow, fromCol, toRow, toCol);
+    } else {
+        field.Remove(fromRow, fromCol);
+    }
 }
 
 } // namespace core

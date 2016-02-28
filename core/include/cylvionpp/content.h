@@ -33,6 +33,9 @@ public:
     virtual Stack & GetUndrawn() = 0;
 
     static std::unique_ptr<Content> New();
+
+    static void StartingShuffle(Content & content);
+    static void PlayerDraw(Content & content);
 };
 
 } // namespace core

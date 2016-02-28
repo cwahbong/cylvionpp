@@ -19,10 +19,12 @@ public:
 
     virtual bool IsCylvan() const = 0;
     virtual bool IsRavage() const = 0;
+    virtual bool IsNone() const = 0;
 
     static bool OnBeforeMove(std::unique_ptr<Card> && card, Content & content, const Actor & actor);
     static bool OnUse(std::unique_ptr<Card> && card, Content & content, const Actor & actor);
 
+    static std::unique_ptr<Card> NewNone();
     static std::unique_ptr<Card> NewFountain(unsigned cost, unsigned strength);
     static std::unique_ptr<Card> NewTree(unsigned cost, unsigned vitality);
     // static std::unique_ptr<Card> NewAnimal(unsigned cost, ...);

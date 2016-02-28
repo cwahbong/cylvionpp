@@ -1,5 +1,6 @@
 #include "cylvionpp/content.h"
 
+#include "cylvionpp/card.h"
 #include "cylvionpp/field.h"
 #include "cylvionpp/hand.h"
 #include "cylvionpp/stack.h"
@@ -58,6 +59,29 @@ std::unique_ptr<Content>
 Content::New()
 {
     return std::make_unique<ContentImpl>();
+}
+
+void
+Content::StartingShuffle(Content & content)
+{
+    content.GetUndrawn().Shuffle();
+    for (size_t i = 0; i < Field::row; ++i) {
+        content.GetField().GetRavageStack(i).Shuffle();
+    }
+}
+
+void
+Content::PlayerDraw(Content & content)
+{
+    auto & undrawn = content.GetUndrawn();
+    if (undrawn.Empty()) {
+        auto & discarded = content.GetDiscarded();
+        while (!discarded.Empty()) {
+            undrawn.Push(discarded.Pop());
+        }
+        undrawn.Shuffle();
+    }
+    content.GetHand().Add(undrawn.Pop());
 }
 
 } // namespace core

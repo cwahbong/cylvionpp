@@ -11,7 +11,36 @@ namespace core {
 
 namespace {
 
-class Cylvan: public Card {
+class None: public Card {
+public:
+    unsigned GetCost() const override { throw std::logic_error("None"); }
+    unsigned GetStrength() const override { throw std::logic_error("None"); }
+    unsigned GetVitality() const override { throw std::logic_error("None"); }
+
+    bool IsCylvan() const override { return false; }
+    bool IsRavage() const override { return false; }
+    bool IsNone() const override { return true; }
+
+private:
+    bool OnBeforeMove(Content &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
+    bool OnUse(Content &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
+};
+
+class NotNone: public Card {
+    bool IsNone() const override { return false; }
+};
+
+} // namespace
+
+std::unique_ptr<Card>
+Card::NewNone()
+{
+    return std::make_unique<None>();
+}
+
+namespace {
+
+class Cylvan: public NotNone {
 public:
     Cylvan(unsigned cost): _cost(cost) {/* Empty. */}
 
@@ -96,7 +125,7 @@ Card::NewTree(unsigned cost, unsigned vitality)
 
 namespace {
 
-class Ravage: public Card {
+class Ravage: public NotNone {
 public:
     unsigned GetCost() const override { return 0; }
     unsigned GetVitality() const override { return 0; }

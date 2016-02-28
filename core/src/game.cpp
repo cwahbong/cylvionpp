@@ -24,7 +24,6 @@ private:
     bool RavageStackHasRavage();
     bool FieldHasRavage();
 
-    void InitShuffle();
     bool Reveal();
     bool Move();
     bool Draw();
@@ -57,22 +56,13 @@ GameImpl::FieldHasRavage()
     Field & field = _content->GetField();
     for (size_t r = 0; r < Field::row; ++r) {
         for (size_t c = 0; c < Field::col; ++c) {
-            auto & card = field.Peek(r, c);
-            if (card && card->IsRavage()) {
+            const auto & card = field.Peek(r, c);
+            if (card.IsRavage()) {
                 return true;
             }
         }
     }
     return false;
-}
-
-void
-GameImpl::InitShuffle()
-{
-    _content->GetUndrawn().Shuffle();
-    for (size_t i = 0; i < Field::row; ++i) {
-        _content->GetField().GetRavageStack(i).Shuffle();
-    }
 }
 
 bool
@@ -117,8 +107,7 @@ GameImpl::Reveal()
     }
     for (size_t row = 0; row < Field::row; ++row) {
         for (size_t col = 0; col < Field::col; ++col) {
-            const auto & peeked = field.Peek(row, col);
-            if (!peeked) {
+            if (!field.Peek(row, col).IsRavage()) {
                 continue;
             }
             auto card = field.Remove(row, col);
@@ -139,32 +128,18 @@ GameImpl::Move()
     Field & field = _content->GetField();
     for (size_t row = 0; row < Field::row; ++row) {
         for (size_t col = 0; col < Field::col; ++col) {
-            const std::unique_ptr<Card> & card = field.Peek(row, col);
-            if (!card || card->IsCylvan()) {
+            const auto & card = field.Peek(row, col);
+            if (!card.IsRavage()) {
                 continue;
             }
             if (col == 0) {
-                if (card->GetStrength() >= _content->GetEdge()) {
+                if (card.GetStrength() >= _content->GetEdge()) {
                     return false;
                 }
-                _content->SetEdge(_content->GetEdge() - card->GetStrength());
+                _content->SetEdge(_content->GetEdge() - card.GetStrength());
                 field.Remove(row, col);
             } else {
-                const auto & leftCard = field.Peek(row, col - 1);
-                if (leftCard && leftCard->IsCylvan()) {
-                    if (leftCard->GetStrength() > card->GetStrength()) {
-                        field.Remove(row, col);
-                    } else {
-                        field.Remove(row, col - 1);
-                        if (leftCard->GetStrength() < card->GetStrength()) {
-                            field.Move(row, col, row, col - 1);
-                        } else {
-                            field.Remove(row, col);
-                        }
-                    }
-                } else {
-                    field.Move(row, col, row, col - 1);
-                }
+                Field::MoveElemental(_content->GetField(), row, col, row, col - 1);
             }
         }
     }
@@ -174,17 +149,8 @@ GameImpl::Move()
 bool
 GameImpl::Draw()
 {
-    Stack & undrawn = _content->GetUndrawn();
-    Hand & hand = _content->GetHand();
     for (int i = 0; i < 3; ++i) {
-        if (undrawn.Empty()) {
-            Stack & discarded = _content->GetDiscarded();
-            while (!discarded.Empty()) {
-                undrawn.Push(discarded.Pop());
-            }
-            undrawn.Shuffle();
-        }
-        hand.Add(undrawn.Pop());
+        Content::PlayerDraw(*_content);
     }
     return true;
 }
@@ -245,7 +211,7 @@ GameImpl::LastMove()
 bool
 GameImpl::Run()
 {
-    InitShuffle();
+    Content::StartingShuffle(*_content);
     while (RavageStackHasRavage()) {
         if (!Reveal() || !Move() || !Draw() || !Defend()) {
             return false;
