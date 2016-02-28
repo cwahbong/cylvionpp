@@ -127,6 +127,18 @@ private:
 Card::~Card()
 {/* Empty. */}
 
+bool
+Card::OnBeforeMove(std::unique_ptr<Card> && card, Content & content, const Actor & actor)
+{
+    return card->OnBeforeMove(content, actor, std::move(card));
+}
+
+bool
+Card::OnUse(std::unique_ptr<Card> && card, Content & content, const Actor & actor)
+{
+    return card->OnUse(content, actor, std::move(card));
+}
+
 std::unique_ptr<Card>
 Card::NewElemental(unsigned strength, unsigned enhancedStrength)
 {

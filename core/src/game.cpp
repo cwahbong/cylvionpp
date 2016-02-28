@@ -17,12 +17,14 @@ namespace {
 
 class GameImpl: public Game {
 public:
-    GameImpl(std::shared_ptr<Actor>, std::shared_ptr<Observer>, std::unique_ptr<Content> &&);
+    GameImpl(std::shared_ptr<Actor>, std::shared_ptr<Observer>, std::unique_ptr<Content>);
     bool Run() override;
 
 private:
-    bool HasRavage();
+    bool RavageStackHasRavage();
+    bool FieldHasRavage();
 
+    void InitShuffle();
     bool Reveal();
     bool Move();
     bool Draw();
@@ -37,16 +39,40 @@ private:
 GameImpl::GameImpl(
         std::shared_ptr<Actor> actor,
         std::shared_ptr<Observer> observer,
-        std::unique_ptr<Content> && content):
+        std::unique_ptr<Content> content):
     _actor(actor),
     _observer(observer),
     _content(std::move(content))
 {/* Empty.*/}
 
 bool
-GameImpl::HasRavage()
+GameImpl::RavageStackHasRavage()
 {
     return !_content->GetField().GetRavageStack(0).Empty();
+}
+
+bool
+GameImpl::FieldHasRavage()
+{
+    Field & field = _content->GetField();
+    for (size_t r = 0; r < Field::row; ++r) {
+        for (size_t c = 0; c < Field::col; ++c) {
+            auto & card = field.Peek(r, c);
+            if (card && card->IsRavage()) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void
+GameImpl::InitShuffle()
+{
+    _content->GetUndrawn().Shuffle();
+    for (size_t i = 0; i < Field::row; ++i) {
+        _content->GetField().GetRavageStack(i).Shuffle();
+    }
 }
 
 bool
@@ -84,19 +110,23 @@ GameImpl::Reveal()
                 // TODO bad input
                 continue;
             }
-            if (!card->OnBeforeMove(*_content, *_actor, std::move(card))) {
+            if (!Card::OnBeforeMove(std::move(card), *_content, *_actor)) {
                 hand.Add(std::move(card));
             }
         }
     }
     for (size_t row = 0; row < Field::row; ++row) {
         for (size_t col = 0; col < Field::col; ++col) {
-            const std::unique_ptr<Card> & card = field.Peek(row, col);
-            if (!card) {
+            const auto & peeked = field.Peek(row, col);
+            if (!peeked) {
                 continue;
             }
-            if (!card->OnBeforeMove(*_content, *_actor, field.Remove(row, col))) {
+            auto card = field.Remove(row, col);
+            if (!Card::OnBeforeMove(std::move(card), *_content, *_actor)) {
                 return false;
+            }
+            if (card) {
+                field.Put(row, col, std::move(card));
             }
         }
     }
@@ -114,21 +144,26 @@ GameImpl::Move()
                 continue;
             }
             if (col == 0) {
-                if (card->GetStrength() > _content->GetEdge()) {
+                if (card->GetStrength() >= _content->GetEdge()) {
                     return false;
                 }
                 _content->SetEdge(_content->GetEdge() - card->GetStrength());
+                field.Remove(row, col);
             } else {
-                const std::unique_ptr<Card> & left_card = field.Peek(row, col - 1);
-                if (left_card->GetStrength() > card->GetStrength()) {
-                    field.Remove(row, col);
-                } else {
-                    field.Remove(row, col - 1);
-                    if (left_card->GetStrength() < card->GetStrength()) {
-                        field.Move(row, col, row, col - 1);
-                    } else {
+                const auto & leftCard = field.Peek(row, col - 1);
+                if (leftCard && leftCard->IsCylvan()) {
+                    if (leftCard->GetStrength() > card->GetStrength()) {
                         field.Remove(row, col);
+                    } else {
+                        field.Remove(row, col - 1);
+                        if (leftCard->GetStrength() < card->GetStrength()) {
+                            field.Move(row, col, row, col - 1);
+                        } else {
+                            field.Remove(row, col);
+                        }
                     }
+                } else {
+                    field.Move(row, col, row, col - 1);
                 }
             }
         }
@@ -184,7 +219,7 @@ GameImpl::Defend()
                 // TODO bad input
                 continue;
             }
-            if (!card->OnUse(*_content, *_actor, std::move(card))) {
+            if (!Card::OnUse(std::move(card), *_content, *_actor)) {
                 hand.Add(std::move(card));
             }
         }
@@ -199,8 +234,7 @@ GameImpl::Defend()
 bool
 GameImpl::LastMove()
 {
-    Field & field = _content->GetField();
-    while (!field.Empty()) {
+    while (FieldHasRavage()) {
         if (!Move()) {
             return false;
         }
@@ -211,12 +245,16 @@ GameImpl::LastMove()
 bool
 GameImpl::Run()
 {
-    while (HasRavage()) {
+    InitShuffle();
+    while (RavageStackHasRavage()) {
         if (!Reveal() || !Move() || !Draw() || !Defend()) {
             return false;
         }
     }
-    return LastMove();
+    if (!LastMove()) {
+        return false;
+    }
+    return _content->GetEdge() == 12;
 }
 
 } // namespace
