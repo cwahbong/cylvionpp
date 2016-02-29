@@ -70,22 +70,22 @@ GameImpl::FieldHasRavage()
 bool
 GameImpl::ResolveSupports(unsigned order)
 {
-    // TODO
     auto & field = _content->GetField();
+    size_t col = Field::col - 1;
     for (size_t row = 0; row < Field::row; ++row) {
-        for (size_t col = 0; col < Field::col; ++col) {
-            if (field.Peek(row, col).IsNone()) {
-                continue;
-            }
-            auto card = field.Remove(row, col);
-            if (!Card::OnBeforeMove(std::move(card), *_content, *_actor)) {
-                return false;
-            }
-            if (card) {
-                field.Put(row, col, std::move(card));
-            }
+        const auto & peeked = field.Peek(row, col);
+        if (peeked.IsNone() || peeked.GetPriority() != order) {
+            continue;
+        }
+        auto card = field.Remove(row, col);
+        if (!Card::OnBeforeMove(std::move(card), *_content, *_actor)) {
+            return false;
+        }
+        if (card) {
+            field.Put(row, col, std::move(card));
         }
     }
+    return true;
 }
 
 bool
@@ -108,20 +108,7 @@ GameImpl::Reveal()
 bool
 GameImpl::Move()
 {
-    Field & field = _content->GetField();
-    for (size_t row = 0; row < Field::row; ++row) {
-        for (size_t col = 0; col < Field::col; ++col) {
-            const auto & card = field.Peek(row, col);
-            if (!card.IsRavage()) {
-                continue;
-            }
-            if (col == 0) {
-                MoveOutElemental(*_content, row, col);
-            } else {
-                MoveElemental(_content->GetField(), row, col, row, col - 1);
-            }
-        }
-    }
+    MoveLeftAllElementals(*_content);
     return true;
 }
 

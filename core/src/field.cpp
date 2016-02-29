@@ -18,6 +18,7 @@ public:
     bool Empty() const override;
 
     const Card & Peek(size_t row, size_t col) const override;
+    Card & Peek(size_t row, size_t col) override;
     bool Put(size_t row, size_t col, std::unique_ptr<Card> &&) override;
     bool Move(size_t row, size_t col, size_t to_row, size_t toCol) override;
     std::unique_ptr<Card> Remove(size_t row, size_t col) override;
@@ -61,6 +62,12 @@ FieldImpl::Peek(size_t row, size_t col) const
 {
     const auto & peeked = c[row][col];
     return peeked ? *peeked : *e;
+}
+
+Card &
+FieldImpl::Peek(size_t row, size_t col)
+{
+    return const_cast<Card &>(static_cast<const FieldImpl *>(this)->Peek(row, col));
 }
 
 bool

@@ -4,6 +4,7 @@
 
 #include "cylvionpp/actor.h"
 #include "cylvionpp/content.h"
+#include "cylvionpp/content_helper.h"
 #include "cylvionpp/field.h"
 
 namespace cylvionpp {
@@ -16,10 +17,14 @@ public:
     unsigned GetCost() const override { throw std::logic_error("None"); }
     unsigned GetStrength() const override { throw std::logic_error("None"); }
     unsigned GetVitality() const override { throw std::logic_error("None"); }
+    unsigned GetPriority() const override { throw std::logic_error("None"); }
 
     bool IsCylvan() const override { return false; }
     bool IsRavage() const override { return false; }
+    bool IsBlazing() const override { return false; }
     bool IsNone() const override { return true; }
+
+    void SetBlaze() override { throw std::logic_error("None"); }
 
 private:
     bool OnBeforeMove(Content &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
@@ -46,9 +51,13 @@ public:
     Cylvan(unsigned cost): _cost(cost) {/* Empty. */}
 
     unsigned GetCost() const override { return _cost; }
+    unsigned GetPriority() const override { throw std::logic_error("cylvan has no priority"); }
 
     bool IsCylvan() const override { return true; }
     bool IsRavage() const override { return false; }
+    bool IsBlazing() const override { return false; }
+
+    void SetBlaze() override {/* Empty. */}
 
     bool OnBeforeMove(Content &, const Actor &, std::unique_ptr<Card> &&) override { return true; }
     bool OnUseWhenReveal(Content & content, const Actor & actor, std::unique_ptr<Card> &&) override;
@@ -168,9 +177,14 @@ public:
     Elemental(bool enhanced, unsigned strength, unsigned enhancedStrength):
         _enhanced(enhanced), _strength(strength), _enhancedStrength(enhancedStrength)
         {/* Empty. */}
-    unsigned GetStrength() const { return _enhanced ? _enhancedStrength : _strength; }
+    unsigned GetStrength() const override { return _enhanced ? _enhancedStrength : _strength; }
+    unsigned GetPriority() const override { return 4; }
 
-    bool OnBeforeMove(Content &, const Actor &, std::unique_ptr<Card> &&) { return true; }
+    bool IsBlazing() const override { return _enhanced; }
+
+    void SetBlaze() override { _enhanced = true; }
+
+    bool OnBeforeMove(Content &, const Actor &, std::unique_ptr<Card> &&) override { return true; }
 
 private:
     bool _enhanced;
@@ -178,7 +192,66 @@ private:
     unsigned _enhancedStrength;
 };
 
+class Support: public Ravage {
+    unsigned GetStrength() const override { throw std::logic_error("Support has no strength"); }
+
+    bool IsBlazing() const override { return false; }
+
+    void SetBlaze() override {/* Empty. */}
+};
+
+class Blaze: public Support {
+    unsigned GetPriority() const override { return 2; }
+
+    bool OnBeforeMove(Content &, const Actor &, std::unique_ptr<Card> &&) override;
+};
+
+bool
+Blaze::OnBeforeMove(Content & content, const Actor &, std::unique_ptr<Card> && self)
+{
+    auto & field = content.GetField();
+    for (size_t row = 0; row < Field::row; ++row) {
+        for (size_t col = 0; col < Field::col; ++col) {
+            field.Peek(row, col).SetBlaze();
+        }
+    }
+    self.reset(); // put to discarded elemental instead
+    return false;
+}
+
+class Simoon: public Support {
+    unsigned GetPriority() const override { return 3; }
+
+    bool OnBeforeMove(Content &, const Actor &, std::unique_ptr<Card> &&) override;
+};
+
+bool
+Simoon::OnBeforeMove(Content & content, const Actor &, std::unique_ptr<Card> && self)
+{
+    MoveLeftAllElementals(content);
+    self.reset(); // put to discarded elemental instead
+    return false;
+}
+
 } // namespace
+
+std::unique_ptr<Card>
+Card::NewElemental(unsigned strength, unsigned enhancedStrength)
+{
+    return std::make_unique<Elemental>(false, strength, enhancedStrength);
+}
+
+std::unique_ptr<Card>
+Card::NewBlaze()
+{
+    return std::make_unique<Blaze>();
+}
+
+std::unique_ptr<Card>
+Card::NewSimoon()
+{
+    return std::make_unique<Simoon>();
+}
 
 Card::~Card()
 {/* Empty. */}
@@ -199,12 +272,6 @@ bool
 Card::OnUseWhenDefend(std::unique_ptr<Card> && card, Content & content, const Actor & actor)
 {
     return card->OnUseWhenDefend(content, actor, std::move(card));
-}
-
-std::unique_ptr<Card>
-Card::NewElemental(unsigned strength, unsigned enhancedStrength)
-{
-    return std::make_unique<Elemental>(false, strength, enhancedStrength);
 }
 
 } // namespace core
