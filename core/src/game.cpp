@@ -6,6 +6,7 @@
 #include "cylvionpp/actor.h"
 #include "cylvionpp/card.h"
 #include "cylvionpp/content.h"
+#include "cylvionpp/content_helper.h"
 #include "cylvionpp/field.h"
 #include "cylvionpp/hand.h"
 #include "cylvionpp/stack.h"
@@ -23,6 +24,7 @@ public:
 private:
     bool RavageStackHasRavage();
     bool FieldHasRavage();
+    bool ResolveSupports(unsigned order);
 
     bool Reveal();
     bool Move();
@@ -66,48 +68,13 @@ GameImpl::FieldHasRavage()
 }
 
 bool
-GameImpl::Reveal()
+GameImpl::ResolveSupports(unsigned order)
 {
-    Field & field = _content->GetField();
-    for (size_t row = 0; row < Field::row; ++row) {
-        Stack & ravage = field.GetRavageStack(row);
-        field.Put(row, Field::col - 1, ravage.Pop());
-    }
-    Hand & hand = _content->GetHand();
-    Stack & discarded = _content->GetDiscarded();
-    while (true) {
-        Action action = _actor->DefendAction(*_content);
-        if (action.end) {
-            break;
-        }
-        if (action.additional["type"] == "discard") {
-            size_t idx;
-            std::stringstream ss(action.additional["idx"]);
-            ss >> idx;
-            std::unique_ptr<Card> card = hand.Remove(idx);
-            if (!card) {
-                // TODO bad input
-                continue;
-            }
-            discarded.Push(std::move(card));
-            _content->SetMana(_content->GetMana() + 1);
-        } else if (action.additional["type"] == "use") {
-            size_t idx;
-            std::stringstream ss(action.additional["idx"]);
-            ss >> idx;
-            std::unique_ptr<Card> card = hand.Remove(idx);
-            if (!card) {
-                // TODO bad input
-                continue;
-            }
-            if (!Card::OnBeforeMove(std::move(card), *_content, *_actor)) {
-                hand.Add(std::move(card));
-            }
-        }
-    }
+    // TODO
+    auto & field = _content->GetField();
     for (size_t row = 0; row < Field::row; ++row) {
         for (size_t col = 0; col < Field::col; ++col) {
-            if (!field.Peek(row, col).IsRavage()) {
+            if (field.Peek(row, col).IsNone()) {
                 continue;
             }
             auto card = field.Remove(row, col);
@@ -118,6 +85,22 @@ GameImpl::Reveal()
                 field.Put(row, col, std::move(card));
             }
         }
+    }
+}
+
+bool
+GameImpl::Reveal()
+{
+    Field & field = _content->GetField();
+    for (size_t row = 0; row < Field::row; ++row) {
+        Stack & ravage = field.GetRavageStack(row);
+        field.Put(row, Field::col - 1, ravage.Pop());
+    }
+    if (!ActRevealActions(*_content, *_actor)) {
+        return false;
+    }
+    for (unsigned i = 0; i < 4; ++i) {
+        ResolveSupports(i);
     }
     return true;
 }
@@ -133,13 +116,9 @@ GameImpl::Move()
                 continue;
             }
             if (col == 0) {
-                if (card.GetStrength() >= _content->GetEdge()) {
-                    return false;
-                }
-                _content->SetEdge(_content->GetEdge() - card.GetStrength());
-                field.Remove(row, col);
+                MoveOutElemental(*_content, row, col);
             } else {
-                Field::MoveElemental(_content->GetField(), row, col, row, col - 1);
+                MoveElemental(_content->GetField(), row, col, row, col - 1);
             }
         }
     }
@@ -150,7 +129,7 @@ bool
 GameImpl::Draw()
 {
     for (int i = 0; i < 3; ++i) {
-        Content::PlayerDraw(*_content);
+        PlayerDraw(*_content);
     }
     return true;
 }
@@ -158,41 +137,12 @@ GameImpl::Draw()
 bool
 GameImpl::Defend()
 {
-    Hand & hand = _content->GetHand();
-    Stack & discarded = _content->GetDiscarded();
-    while (true) {
-        Action action = _actor->DefendAction(*_content);
-        if (action.end) {
-            break;
-        }
-        if (action.additional["type"] == "discard") {
-            size_t idx;
-            std::stringstream ss(action.additional["idx"]);
-            ss >> idx;
-            std::unique_ptr<Card> card = hand.Remove(idx);
-            if (!card) {
-                // TODO bad input
-                continue;
-            }
-            discarded.Push(std::move(card));
-            _content->SetMana(_content->GetMana() + 1);
-        } else if (action.additional["type"] == "use") {
-            size_t idx;
-            std::stringstream ss(action.additional["idx"]);
-            ss >> idx;
-            std::unique_ptr<Card> card = hand.Remove(idx);
-            if (!card) {
-                // TODO bad input
-                continue;
-            }
-            if (!Card::OnUse(std::move(card), *_content, *_actor)) {
-                hand.Add(std::move(card));
-            }
-        }
+    if (!ActDefendActions(*_content, *_actor)) {
+        return false;
     }
+    const auto & hand = _content->GetHand();
     while (hand.Size() > 10) {
-        size_t idx = _actor->AnswerIndex("discard hand");
-        discarded.Push(hand.Remove(idx));
+        DiscardChooseFromHand(*_content, *_actor);
     }
     return true;
 }
@@ -211,7 +161,7 @@ GameImpl::LastMove()
 bool
 GameImpl::Run()
 {
-    Content::StartingShuffle(*_content);
+    StartingShuffle(*_content);
     while (RavageStackHasRavage()) {
         if (!Reveal() || !Move() || !Draw() || !Defend()) {
             return false;

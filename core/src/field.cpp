@@ -117,7 +117,7 @@ Field::New()
 }
 
 void
-Field::MoveElemental(Field & field, size_t fromRow, size_t fromCol,
+MoveElemental(Field & field, size_t fromRow, size_t fromCol,
                      size_t toRow, size_t toCol)
 {
     const auto & movingCard = field.Peek(fromRow, fromCol);

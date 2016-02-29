@@ -15,6 +15,8 @@ public:
     virtual ~Content() = 0;
 
     virtual unsigned GetEdge() const = 0;
+    virtual void IncreaseEdge(unsigned) = 0;
+    virtual void DecreaseEdge(unsigned) = 0;
     virtual void SetEdge(unsigned) = 0;
 
     virtual unsigned GetMana() const = 0;
@@ -33,9 +35,6 @@ public:
     virtual Stack & GetUndrawn() = 0;
 
     static std::unique_ptr<Content> New();
-
-    static void StartingShuffle(Content & content);
-    static void PlayerDraw(Content & content);
 };
 
 } // namespace core

@@ -1,6 +1,5 @@
 #include "cylvionpp/content.h"
 
-#include "cylvionpp/card.h"
 #include "cylvionpp/field.h"
 #include "cylvionpp/hand.h"
 #include "cylvionpp/stack.h"
@@ -15,6 +14,8 @@ public:
     ContentImpl();
 
     unsigned GetEdge() const override { return _edge; }
+    void IncreaseEdge(unsigned amount) override { _edge += amount; }
+    void DecreaseEdge(unsigned amount) override;
     void SetEdge(unsigned edge) override { _edge = edge; }
 
     unsigned GetMana() const override { return _mana; }
@@ -50,6 +51,15 @@ ContentImpl::ContentImpl():
     _undrawn(Stack::New())
 {/* Empty. */}
 
+void
+ContentImpl::DecreaseEdge(unsigned amount)
+{
+    if (amount > _edge) {
+        throw "lose";
+    }
+    _edge -= amount;
+}
+
 } // namespace
 
 Content::~Content()
@@ -59,29 +69,6 @@ std::unique_ptr<Content>
 Content::New()
 {
     return std::make_unique<ContentImpl>();
-}
-
-void
-Content::StartingShuffle(Content & content)
-{
-    content.GetUndrawn().Shuffle();
-    for (size_t i = 0; i < Field::row; ++i) {
-        content.GetField().GetRavageStack(i).Shuffle();
-    }
-}
-
-void
-Content::PlayerDraw(Content & content)
-{
-    auto & undrawn = content.GetUndrawn();
-    if (undrawn.Empty()) {
-        auto & discarded = content.GetDiscarded();
-        while (!discarded.Empty()) {
-            undrawn.Push(discarded.Pop());
-        }
-        undrawn.Shuffle();
-    }
-    content.GetHand().Add(undrawn.Pop());
 }
 
 } // namespace core

@@ -22,7 +22,8 @@ public:
     virtual bool IsNone() const = 0;
 
     static bool OnBeforeMove(std::unique_ptr<Card> && card, Content & content, const Actor & actor);
-    static bool OnUse(std::unique_ptr<Card> && card, Content & content, const Actor & actor);
+    static bool OnUseWhenReveal(std::unique_ptr<Card> && card, Content & content, const Actor & actor);
+    static bool OnUseWhenDefend(std::unique_ptr<Card> && card, Content & content, const Actor & actor);
 
     static std::unique_ptr<Card> NewNone();
     static std::unique_ptr<Card> NewFountain(unsigned cost, unsigned strength);
@@ -33,7 +34,8 @@ public:
 
 private:
     virtual bool OnBeforeMove(Content & content, const Actor & actor, std::unique_ptr<Card> && self) = 0;
-    virtual bool OnUse(Content & content, const Actor & actor, std::unique_ptr<Card> && self) = 0;
+    virtual bool OnUseWhenReveal(Content & content, const Actor & actor, std::unique_ptr<Card> && self) = 0;
+    virtual bool OnUseWhenDefend(Content & content, const Actor & actor, std::unique_ptr<Card> && self) = 0;
 };
 
 } // namespace core

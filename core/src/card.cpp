@@ -23,7 +23,8 @@ public:
 
 private:
     bool OnBeforeMove(Content &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
-    bool OnUse(Content &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
+    bool OnUseWhenReveal(Content &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
+    bool OnUseWhenDefend(Content &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
 };
 
 class NotNone: public Card {
@@ -50,31 +51,56 @@ public:
     bool IsRavage() const override { return false; }
 
     bool OnBeforeMove(Content &, const Actor &, std::unique_ptr<Card> &&) override { return true; }
-    bool OnUse(Content & content, const Actor & actor, std::unique_ptr<Card> &&) override;
+    bool OnUseWhenReveal(Content & content, const Actor & actor, std::unique_ptr<Card> &&) override;
+    bool OnUseWhenDefend(Content & content, const Actor & actor, std::unique_ptr<Card> &&) override;
 
 private:
+    virtual bool CanUseWhenReveal() = 0;
+    virtual bool CanUseWhenDefend() = 0;
+    bool OnUse(Content & content, const Actor & actor, std::unique_ptr<Card> &&);
     virtual bool OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> &&) = 0;
 
     unsigned _cost;
 };
 
 bool
-Cylvan::OnUse(Content & content, const Actor & actor, std::unique_ptr<Card> && transfer)
+Cylvan::OnUse(Content & content, const Actor & actor, std::unique_ptr<Card> && self)
 {
     if (content.GetMana() < GetCost()) {
         return false;
     }
-    if (!OnUseEffect(content, actor, std::move(transfer))) {
+    if (!OnUseEffect(content, actor, std::move(self))) {
         return false;
     }
     content.SetMana(content.GetMana() - GetCost());
     return true;
 }
 
+bool
+Cylvan::OnUseWhenReveal(Content & content, const Actor & actor, std::unique_ptr<Card> && self)
+{
+    if (!CanUseWhenReveal()) {
+        return false;
+    }
+    return OnUse(content, actor, std::move(self));
+}
+
+bool
+Cylvan::OnUseWhenDefend(Content & content, const Actor & actor, std::unique_ptr<Card> && self)
+{
+    if (!CanUseWhenDefend()) {
+        return false;
+    }
+    return OnUse(content, actor, std::move(self));
+}
+
 class OnFieldCylvan: public Cylvan {
 public:
     OnFieldCylvan(unsigned cost): Cylvan(cost) {/* Empty. */}
 
+private:
+    bool CanUseWhenReveal() override { return false; }
+    bool CanUseWhenDefend() override { return true; }
     bool OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> && transfer) override;
 };
 
@@ -133,7 +159,8 @@ public:
     bool IsCylvan() const override { return false; }
     bool IsRavage() const override { return true; }
 
-    bool OnUse(Content &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("Ravage is not usable"); }
+    bool OnUseWhenReveal(Content &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("Ravage is not usable"); }
+    bool OnUseWhenDefend(Content &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("Ravage is not usable"); }
 };
 
 class Elemental: public Ravage {
@@ -163,9 +190,15 @@ Card::OnBeforeMove(std::unique_ptr<Card> && card, Content & content, const Actor
 }
 
 bool
-Card::OnUse(std::unique_ptr<Card> && card, Content & content, const Actor & actor)
+Card::OnUseWhenReveal(std::unique_ptr<Card> && card, Content & content, const Actor & actor)
 {
-    return card->OnUse(content, actor, std::move(card));
+    return card->OnUseWhenReveal(content, actor, std::move(card));
+}
+
+bool
+Card::OnUseWhenDefend(std::unique_ptr<Card> && card, Content & content, const Actor & actor)
+{
+    return card->OnUseWhenDefend(content, actor, std::move(card));
 }
 
 std::unique_ptr<Card>

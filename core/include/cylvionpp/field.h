@@ -27,8 +27,9 @@ public:
     const static size_t col = 5;
     static std::unique_ptr<Field> New();
 
-    static void MoveElemental(Field & field, size_t fromRow, size_t fromCol, size_t toRow, size_t toCol);
 };
+
+void MoveElemental(Field & field, size_t fromRow, size_t fromCol, size_t toRow, size_t toCol);
 
 } // namespace core
 } // namespace cylvionpp
