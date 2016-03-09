@@ -6,6 +6,7 @@
 #include "cylvionpp/content.h"
 #include "cylvionpp/content_helper.h"
 #include "cylvionpp/field.h"
+#include "cylvionpp/stack.h"
 
 namespace cylvionpp {
 namespace core {
@@ -156,6 +157,136 @@ std::unique_ptr<Card>
 Card::NewTree(unsigned cost, unsigned vitality)
 {
     return std::make_unique<Tree>(cost, vitality);
+}
+
+namespace {
+
+class Animal: public Cylvan {
+public:
+    Animal(unsigned cost): Cylvan(cost) {/* Empty. */}
+
+    unsigned GetStrength() const override { return 0; }
+    unsigned GetVitality() const override { return 0; }
+};
+
+class DefenseAnimal: public Animal {
+public:
+    DefenseAnimal(unsigned cost): Animal(cost) {/* Empty. */}
+
+private:
+    bool CanUseWhenReveal() override { return false; }
+    bool CanUseWhenDefend() override { return true; }
+};
+
+class Whale: public DefenseAnimal {
+public:
+    Whale(): DefenseAnimal(0) {/* Empty. */}
+
+private:
+    bool OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> &&) override;
+};
+
+bool
+Whale::OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> && transfer)
+{
+    // TODO error handling
+    size_t fromRow = actor.AnswerIndex("elem from row");
+    size_t fromCol = actor.AnswerIndex("elem from col");
+    size_t toRow = actor.AnswerIndex("elem to row");
+    size_t toCol = actor.AnswerIndex("elem to col");
+    MoveElemental(content.GetField(), fromRow, fromCol, toRow, toCol);
+    content.GetDiscarded().Push(std::move(transfer));
+    return true;
+}
+
+class Elephant: public DefenseAnimal {
+public:
+    Elephant(): DefenseAnimal(1) {/* Empty. */}
+
+private:
+    bool OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> &&) override;
+};
+
+bool
+Elephant::OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> && transfer)
+{
+    size_t row = actor.AnswerIndex("elem row");
+    size_t col = actor.AnswerIndex("elem col");
+    auto & field = content.GetField();
+    if (!field.Peek(row, col).IsNone()) {
+        return false;
+    }
+    field.Remove(row, col);
+    content.GetDiscarded().Push(std::move(transfer));
+    return true;
+}
+
+class Hedgehogs: public Animal {
+public:
+    Hedgehogs(): Animal(0) {/* Empty. */}
+
+private:
+    bool CanUseWhenReveal() override { return true; }
+    bool CanUseWhenDefend() override { return false; }
+    bool OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> &&) override;
+};
+
+bool
+Hedgehogs::OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> && transfer)
+{
+    const size_t row = actor.AnswerIndex("elem row");
+    const size_t col = Field::col - 1;
+    auto & field = content.GetField();
+    if (!field.Peek(row, col).IsRavage()) {
+        return false;
+    }
+    field.Remove(row, col);
+    content.GetDiscarded().Push(std::move(transfer));
+    return true;
+}
+
+class Owl: public DefenseAnimal {
+public:
+    Owl(): DefenseAnimal(1) {/* Empty. */}
+
+private:
+    bool OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> &&) override;
+};
+
+bool
+Owl::OnUseEffect(Content & content, const Actor &, std::unique_ptr<Card> && transfer)
+{
+    for (int i = 0; i < 3; ++i) {
+        PlayerDraw(content);
+    }
+    content.GetDiscarded().Push(std::move(transfer));
+    return true;
+}
+
+} // namespace
+
+std::unique_ptr<Card>
+Card::NewWhale()
+{
+    return std::make_unique<Whale>();
+}
+
+std::unique_ptr<Card>
+Card::NewElephant()
+{
+    return std::make_unique<Elephant>();
+}
+
+std::unique_ptr<Card>
+Card::NewHedgehogs()
+{
+    return std::make_unique<Hedgehogs>();
+}
+
+std::unique_ptr<Card>
+Card::NewOwl()
+{
+    return std::make_unique<Owl>();
 }
 
 namespace {

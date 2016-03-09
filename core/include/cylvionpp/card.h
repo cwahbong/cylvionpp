@@ -32,7 +32,10 @@ public:
     static std::unique_ptr<Card> NewNone();
     static std::unique_ptr<Card> NewFountain(unsigned cost, unsigned strength);
     static std::unique_ptr<Card> NewTree(unsigned cost, unsigned vitality);
-    // static std::unique_ptr<Card> NewAnimal(unsigned cost, ...);
+    static std::unique_ptr<Card> NewWhale();
+    static std::unique_ptr<Card> NewElephant();
+    static std::unique_ptr<Card> NewHedgehogs();
+    static std::unique_ptr<Card> NewOwl();
     static std::unique_ptr<Card> NewElemental(unsigned strength, unsigned enhancedStrength);
     static std::unique_ptr<Card> NewBlaze();
     static std::unique_ptr<Card> NewSimoon();
