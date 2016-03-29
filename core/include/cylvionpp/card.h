@@ -29,17 +29,6 @@ public:
     static bool OnUseWhenReveal(std::unique_ptr<Card> && card, Content & content, const Actor & actor);
     static bool OnUseWhenDefend(std::unique_ptr<Card> && card, Content & content, const Actor & actor);
 
-    static std::unique_ptr<Card> NewNone();
-    static std::unique_ptr<Card> NewFountain(unsigned cost, unsigned strength);
-    static std::unique_ptr<Card> NewTree(unsigned cost, unsigned vitality);
-    static std::unique_ptr<Card> NewWhale();
-    static std::unique_ptr<Card> NewElephant();
-    static std::unique_ptr<Card> NewHedgehogs();
-    static std::unique_ptr<Card> NewOwl();
-    static std::unique_ptr<Card> NewElemental(unsigned strength, unsigned enhancedStrength);
-    static std::unique_ptr<Card> NewBlaze();
-    static std::unique_ptr<Card> NewSimoon();
-
 private:
     virtual bool OnBeforeMove(Content & content, const Actor & actor, std::unique_ptr<Card> && self) = 0;
     virtual bool OnUseWhenReveal(Content & content, const Actor & actor, std::unique_ptr<Card> && self) = 0;

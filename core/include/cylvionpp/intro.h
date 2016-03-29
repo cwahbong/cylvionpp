@@ -6,10 +6,11 @@
 namespace cylvionpp {
 namespace core {
 
+class CardFactory;
 class Content;
 
 std::unique_ptr<Content>
-MakeIntroContent();
+MakeIntroContent(CardFactory & cardFactory);
 
 // TODO MakeFullGame
 

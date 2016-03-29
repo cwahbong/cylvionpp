@@ -6,6 +6,7 @@
 namespace cylvionpp {
 namespace core {
 
+class CardFactory;
 class Field;
 class Hand;
 class Stack;

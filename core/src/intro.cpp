@@ -1,6 +1,7 @@
 #include "cylvionpp/intro.h"
 
 #include "cylvionpp/card.h"
+#include "cylvionpp/card_factory.h"
 #include "cylvionpp/content.h"
 #include "cylvionpp/field.h"
 #include "cylvionpp/game.h"
@@ -10,33 +11,33 @@ namespace cylvionpp {
 namespace core {
 
 std::unique_ptr<Content>
-MakeIntroContent()
+MakeIntroContent(CardFactory & cardFactory)
 {
     auto content = Content::New();
     content->SetEdge(6);
     auto & undrawn = content->GetUndrawn();
     for (int i = 0; i < 4; ++i) {
-        undrawn.Push(Card::NewFountain(0, 1));
-        undrawn.Push(Card::NewFountain(1, 2));
-        undrawn.Push(Card::NewFountain(2, 3));
-        undrawn.Push(Card::NewFountain(3, 4));
-        undrawn.Push(Card::NewTree(0, 1));
-        undrawn.Push(Card::NewTree(1, 2));
-        undrawn.Push(Card::NewTree(2, 3));
-        undrawn.Push(Card::NewTree(3, 4));
-        undrawn.Push(Card::NewWhale());
-        undrawn.Push(Card::NewElephant());
-        undrawn.Push(Card::NewHedgehogs());
-        undrawn.Push(Card::NewOwl());
+        undrawn.Push(cardFactory.NewFountain(0, 1));
+        undrawn.Push(cardFactory.NewFountain(1, 2));
+        undrawn.Push(cardFactory.NewFountain(2, 3));
+        undrawn.Push(cardFactory.NewFountain(3, 4));
+        undrawn.Push(cardFactory.NewTree(0, 1));
+        undrawn.Push(cardFactory.NewTree(1, 2));
+        undrawn.Push(cardFactory.NewTree(2, 3));
+        undrawn.Push(cardFactory.NewTree(3, 4));
+        undrawn.Push(cardFactory.NewWhale());
+        undrawn.Push(cardFactory.NewElephant());
+        undrawn.Push(cardFactory.NewHedgehogs());
+        undrawn.Push(cardFactory.NewOwl());
     }
     auto allRavages = Stack::New();
     for (int i = 0; i < 8; ++i) {
-        allRavages->Push(Card::NewElemental(0, 4));
-        allRavages->Push(Card::NewElemental(1, 2));
-        allRavages->Push(Card::NewElemental(2, 3));
-        allRavages->Push(Card::NewElemental(3, 4));
-        allRavages->Push(Card::NewBlaze());
-        allRavages->Push(Card::NewSimoon());
+        allRavages->Push(cardFactory.NewElemental(0, 4));
+        allRavages->Push(cardFactory.NewElemental(1, 2));
+        allRavages->Push(cardFactory.NewElemental(2, 3));
+        allRavages->Push(cardFactory.NewElemental(3, 4));
+        allRavages->Push(cardFactory.NewBlaze());
+        allRavages->Push(cardFactory.NewSimoon());
     }
     if (allRavages->Size() % 4 != 0) {
         return nullptr;
