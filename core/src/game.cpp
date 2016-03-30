@@ -7,8 +7,11 @@
 #include "cylvionpp/card.h"
 #include "cylvionpp/content.h"
 #include "cylvionpp/content_helper.h"
+#include "cylvionpp/dealer.h"
 #include "cylvionpp/field.h"
 #include "cylvionpp/hand.h"
+#include "cylvionpp/operation.h"
+#include "cylvionpp/operation_factory.h"
 #include "cylvionpp/stack.h"
 
 namespace cylvionpp {
@@ -34,7 +37,7 @@ private:
 
     std::shared_ptr<Actor> _actor;
     std::shared_ptr<Observer> _observer;
-    std::unique_ptr<Content> _content;
+    std::unique_ptr<Dealer> _dealer;
 };
 
 GameImpl::GameImpl(
@@ -43,19 +46,19 @@ GameImpl::GameImpl(
         std::unique_ptr<Content> content):
     _actor(actor),
     _observer(observer),
-    _content(std::move(content))
+    _dealer(Dealer::New(std::move(content), OperationFactory::New()))
 {/* Empty.*/}
 
 bool
 GameImpl::RavageStackHasRavage()
 {
-    return !_content->GetField().GetRavageStack(0).Empty();
+    return !_dealer->GetContent().GetField().GetRavageStack(0).Empty();
 }
 
 bool
 GameImpl::FieldHasRavage()
 {
-    Field & field = _content->GetField();
+    const auto & field = _dealer->GetContent().GetField();
     for (size_t r = 0; r < Field::row; ++r) {
         for (size_t c = 0; c < Field::col; ++c) {
             const auto & card = field.Peek(r, c);
@@ -70,7 +73,8 @@ GameImpl::FieldHasRavage()
 bool
 GameImpl::ResolveSupports(unsigned order)
 {
-    auto & field = _content->GetField();
+    // XXX
+    /* const auto & field = _dealer->GetContent().GetField();
     size_t col = Field::col - 1;
     for (size_t row = 0; row < Field::row; ++row) {
         const auto & peeked = field.Peek(row, col);
@@ -78,27 +82,27 @@ GameImpl::ResolveSupports(unsigned order)
             continue;
         }
         auto card = field.Remove(row, col);
-        if (!Card::OnBeforeMove(std::move(card), *_content, *_actor)) {
+        if (!Card::OnBeforeMove(std::move(card), *_dealer, *_actor)) {
             return false;
         }
         if (card) {
             field.Put(row, col, std::move(card));
         }
-    }
+    } */
     return true;
 }
 
 bool
 GameImpl::Reveal()
 {
-    Field & field = _content->GetField();
+    const auto & field = _dealer->GetContent().GetField();
     for (size_t row = 0; row < Field::row; ++row) {
-        Stack & ravage = field.GetRavageStack(row);
-        field.Put(row, Field::col - 1, ravage.Pop());
+        // XXX Stack & ravage = field.GetRavageStack(row);
+        // field.Put(row, Field::col - 1, ravage.Pop());
     }
-    if (!ActRevealActions(*_content, *_actor)) {
+    /* XXX if (!ActRevealActions(*_content, *_actor)) {
         return false;
-    }
+    } */
     for (unsigned i = 0; i < 4; ++i) {
         ResolveSupports(i);
     }
@@ -108,28 +112,25 @@ GameImpl::Reveal()
 bool
 GameImpl::Move()
 {
-    MoveLeftAllElementals(*_content);
+    MoveLeftAllElementals(*_dealer);
     return true;
 }
 
 bool
 GameImpl::Draw()
 {
-    for (int i = 0; i < 3; ++i) {
-        PlayerDraw(*_content);
-    }
-    return true;
+    return _dealer->Perform(*_dealer->GetOperationFactory().PlayerDraw(3));
 }
 
 bool
 GameImpl::Defend()
 {
-    if (!ActDefendActions(*_content, *_actor)) {
+    /* XXX if (!ActDefendActions(*_content, *_actor)) {
         return false;
-    }
-    const auto & hand = _content->GetHand();
+    } */
+    const auto & hand = _dealer->GetContent().GetHand();
     while (hand.Size() > 10) {
-        DiscardChooseFromHand(*_content, *_actor);
+        // XXX DiscardChooseFromHand(*_content, *_actor);
     }
     return true;
 }
@@ -148,7 +149,7 @@ GameImpl::LastMove()
 bool
 GameImpl::Run()
 {
-    StartingShuffle(*_content);
+    // XXX StartingShuffle(*_content);
     while (RavageStackHasRavage()) {
         if (!Reveal() || !Move() || !Draw() || !Defend()) {
             return false;
@@ -157,7 +158,7 @@ GameImpl::Run()
     if (!LastMove()) {
         return false;
     }
-    return _content->GetEdge() == 12;
+    return _dealer->GetContent().GetEdge() == 12;
 }
 
 } // namespace

@@ -62,8 +62,7 @@ ContentImpl::DecreaseEdge(unsigned amount)
 
 } // namespace
 
-Content::~Content()
-{/* Empty. */}
+Content::~Content() = default;
 
 std::unique_ptr<Content>
 Content::New()

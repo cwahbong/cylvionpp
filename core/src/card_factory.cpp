@@ -4,8 +4,11 @@
 #include "cylvionpp/card.h"
 #include "cylvionpp/content.h"
 #include "cylvionpp/content_helper.h"
+#include "cylvionpp/dealer.h"
 #include "cylvionpp/field.h"
 #include "cylvionpp/stack.h"
+#include "cylvionpp/operation.h"
+#include "cylvionpp/operation_factory.h"
 
 
 namespace cylvionpp {
@@ -28,9 +31,9 @@ public:
     void SetBlaze() override { throw std::logic_error("None"); }
 
 private:
-    bool OnBeforeMove(Content &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
-    bool OnUseWhenReveal(Content &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
-    bool OnUseWhenDefend(Content &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
+    bool OnBeforeMove(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
+    bool OnUseWhenReveal(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
+    bool OnUseWhenDefend(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
 };
 
 class NotNone: public Card {
@@ -50,48 +53,49 @@ public:
 
     void SetBlaze() override {/* Empty. */}
 
-    bool OnBeforeMove(Content &, const Actor &, std::unique_ptr<Card> &&) override { return true; }
-    bool OnUseWhenReveal(Content & content, const Actor & actor, std::unique_ptr<Card> &&) override;
-    bool OnUseWhenDefend(Content & content, const Actor & actor, std::unique_ptr<Card> &&) override;
+    bool OnBeforeMove(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { return true; }
+    bool OnUseWhenReveal(Dealer & content, const Actor & actor, std::unique_ptr<Card> &&) override;
+    bool OnUseWhenDefend(Dealer & content, const Actor & actor, std::unique_ptr<Card> &&) override;
 
 private:
     virtual bool CanUseWhenReveal() = 0;
     virtual bool CanUseWhenDefend() = 0;
-    bool OnUse(Content & content, const Actor & actor, std::unique_ptr<Card> &&);
-    virtual bool OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> &&) = 0;
+    bool OnUse(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> &&);
+    virtual bool OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> &&) = 0;
 
     unsigned _cost;
 };
 
 bool
-Cylvan::OnUse(Content & content, const Actor & actor, std::unique_ptr<Card> && self)
+Cylvan::OnUse(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && self)
 {
+    const auto & content = dealer.GetContent();
     if (content.GetMana() < GetCost()) {
         return false;
     }
-    if (!OnUseEffect(content, actor, std::move(self))) {
+    if (!OnUseEffect(dealer, actor, std::move(self))) {
         return false;
     }
-    content.SetMana(content.GetMana() - GetCost());
+    // XXX content.SetMana(content.GetMana() - GetCost());
     return true;
 }
 
 bool
-Cylvan::OnUseWhenReveal(Content & content, const Actor & actor, std::unique_ptr<Card> && self)
+Cylvan::OnUseWhenReveal(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && self)
 {
     if (!CanUseWhenReveal()) {
         return false;
     }
-    return OnUse(content, actor, std::move(self));
+    return OnUse(dealer, actor, std::move(self));
 }
 
 bool
-Cylvan::OnUseWhenDefend(Content & content, const Actor & actor, std::unique_ptr<Card> && self)
+Cylvan::OnUseWhenDefend(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && self)
 {
     if (!CanUseWhenDefend()) {
         return false;
     }
-    return OnUse(content, actor, std::move(self));
+    return OnUse(dealer, actor, std::move(self));
 }
 
 class OnFieldCylvan: public Cylvan {
@@ -101,16 +105,17 @@ public:
 private:
     bool CanUseWhenReveal() override { return false; }
     bool CanUseWhenDefend() override { return true; }
-    bool OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> && transfer) override;
+    bool OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && transfer) override;
 };
 
 bool
-OnFieldCylvan::OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> && transfer)
+OnFieldCylvan::OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && transfer)
 {
-    Field & field = content.GetField();
+    const auto & field = dealer.GetContent().GetField();
     size_t row = actor.AnswerIndex("put field row");
     size_t col = actor.AnswerIndex("put field col");
-    return field.Put(row, col, std::move(transfer));
+    return true;
+    // XXX return field.Put(row, col, std::move(transfer));
 }
 
 class Fountain: public OnFieldCylvan {
@@ -157,19 +162,19 @@ public:
     Whale(): DefenseAnimal(0) {/* Empty. */}
 
 private:
-    bool OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> &&) override;
+    bool OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> &&) override;
 };
 
 bool
-Whale::OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> && transfer)
+Whale::OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && transfer)
 {
     // TODO error handling
     size_t fromRow = actor.AnswerIndex("elem from row");
     size_t fromCol = actor.AnswerIndex("elem from col");
     size_t toRow = actor.AnswerIndex("elem to row");
     size_t toCol = actor.AnswerIndex("elem to col");
-    MoveElemental(content.GetField(), fromRow, fromCol, toRow, toCol);
-    content.GetDiscarded().Push(std::move(transfer));
+    // XXX MoveElemental(content.GetField(), fromRow, fromCol, toRow, toCol);
+    // XXX content.GetDiscarded().Push(std::move(transfer));
     return true;
 }
 
@@ -178,20 +183,20 @@ public:
     Elephant(): DefenseAnimal(1) {/* Empty. */}
 
 private:
-    bool OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> &&) override;
+    bool OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> &&) override;
 };
 
 bool
-Elephant::OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> && transfer)
+Elephant::OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && transfer)
 {
     size_t row = actor.AnswerIndex("elem row");
     size_t col = actor.AnswerIndex("elem col");
-    auto & field = content.GetField();
+    const auto & field = dealer.GetContent().GetField();
     if (!field.Peek(row, col).IsNone()) {
         return false;
     }
-    field.Remove(row, col);
-    content.GetDiscarded().Push(std::move(transfer));
+    // XXX field.Remove(row, col);
+    // XXX content.GetDiscarded().Push(std::move(transfer));
     return true;
 }
 
@@ -202,20 +207,20 @@ public:
 private:
     bool CanUseWhenReveal() override { return true; }
     bool CanUseWhenDefend() override { return false; }
-    bool OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> &&) override;
+    bool OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> &&) override;
 };
 
 bool
-Hedgehogs::OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> && transfer)
+Hedgehogs::OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && transfer)
 {
     const size_t row = actor.AnswerIndex("elem row");
     const size_t col = Field::col - 1;
-    auto & field = content.GetField();
+    const auto & field = dealer.GetContent().GetField();
     if (!field.Peek(row, col).IsRavage()) {
         return false;
     }
-    field.Remove(row, col);
-    content.GetDiscarded().Push(std::move(transfer));
+    // XXX field.Remove(row, col);
+    // XXX content.GetDiscarded().Push(std::move(transfer));
     return true;
 }
 
@@ -224,16 +229,16 @@ public:
     Owl(): DefenseAnimal(1) {/* Empty. */}
 
 private:
-    bool OnUseEffect(Content & content, const Actor & actor, std::unique_ptr<Card> &&) override;
+    bool OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> &&) override;
 };
 
 bool
-Owl::OnUseEffect(Content & content, const Actor &, std::unique_ptr<Card> && transfer)
+Owl::OnUseEffect(Dealer & dealer, const Actor &, std::unique_ptr<Card> && transfer)
 {
-    for (int i = 0; i < 3; ++i) {
-        PlayerDraw(content);
+    if (!dealer.Perform(*dealer.GetOperationFactory().PlayerDraw(3))) {
+        return false;
     }
-    content.GetDiscarded().Push(std::move(transfer));
+    // content.GetDiscarded().Push(std::move(transfer));
     return true;
 }
 
@@ -245,8 +250,8 @@ public:
     bool IsCylvan() const override { return false; }
     bool IsRavage() const override { return true; }
 
-    bool OnUseWhenReveal(Content &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("Ravage is not usable"); }
-    bool OnUseWhenDefend(Content &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("Ravage is not usable"); }
+    bool OnUseWhenReveal(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("Ravage is not usable"); }
+    bool OnUseWhenDefend(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("Ravage is not usable"); }
 };
 
 class Elemental: public Ravage {
@@ -261,7 +266,7 @@ public:
 
     void SetBlaze() override { _enhanced = true; }
 
-    bool OnBeforeMove(Content &, const Actor &, std::unique_ptr<Card> &&) override { return true; }
+    bool OnBeforeMove(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { return true; }
 
 private:
     bool _enhanced;
@@ -280,16 +285,16 @@ class Support: public Ravage {
 class Blaze: public Support {
     unsigned GetPriority() const override { return 2; }
 
-    bool OnBeforeMove(Content &, const Actor &, std::unique_ptr<Card> &&) override;
+    bool OnBeforeMove(Dealer &, const Actor &, std::unique_ptr<Card> &&) override;
 };
 
 bool
-Blaze::OnBeforeMove(Content & content, const Actor &, std::unique_ptr<Card> && self)
+Blaze::OnBeforeMove(Dealer & dealer, const Actor &, std::unique_ptr<Card> && self)
 {
-    auto & field = content.GetField();
+    const auto & field = dealer.GetContent().GetField();
     for (size_t row = 0; row < Field::row; ++row) {
         for (size_t col = 0; col < Field::col; ++col) {
-            field.Peek(row, col).SetBlaze();
+            // XXX field.Peek(row, col).SetBlaze();
         }
     }
     self.reset(); // put to discarded elemental instead
@@ -299,13 +304,13 @@ Blaze::OnBeforeMove(Content & content, const Actor &, std::unique_ptr<Card> && s
 class Simoon: public Support {
     unsigned GetPriority() const override { return 3; }
 
-    bool OnBeforeMove(Content &, const Actor &, std::unique_ptr<Card> &&) override;
+    bool OnBeforeMove(Dealer &, const Actor &, std::unique_ptr<Card> &&) override;
 };
 
 bool
-Simoon::OnBeforeMove(Content & content, const Actor &, std::unique_ptr<Card> && self)
+Simoon::OnBeforeMove(Dealer & dealer, const Actor &, std::unique_ptr<Card> && self)
 {
-    MoveLeftAllElementals(content);
+    MoveLeftAllElementals(dealer);
     self.reset(); // put to discarded elemental instead
     return false;
 }

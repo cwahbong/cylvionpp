@@ -3,10 +3,6 @@
 #include <exception>
 
 #include "cylvionpp/actor.h"
-#include "cylvionpp/content.h"
-#include "cylvionpp/content_helper.h"
-#include "cylvionpp/field.h"
-#include "cylvionpp/stack.h"
 
 namespace cylvionpp {
 namespace core {
@@ -15,21 +11,21 @@ Card::~Card()
 {/* Empty. */}
 
 bool
-Card::OnBeforeMove(std::unique_ptr<Card> && card, Content & content, const Actor & actor)
+Card::OnBeforeMove(std::unique_ptr<Card> && card, Dealer & dealer, const Actor & actor)
 {
-    return card->OnBeforeMove(content, actor, std::move(card));
+    return card->OnBeforeMove(dealer, actor, std::move(card));
 }
 
 bool
-Card::OnUseWhenReveal(std::unique_ptr<Card> && card, Content & content, const Actor & actor)
+Card::OnUseWhenReveal(std::unique_ptr<Card> && card, Dealer & dealer, const Actor & actor)
 {
-    return card->OnUseWhenReveal(content, actor, std::move(card));
+    return card->OnUseWhenReveal(dealer, actor, std::move(card));
 }
 
 bool
-Card::OnUseWhenDefend(std::unique_ptr<Card> && card, Content & content, const Actor & actor)
+Card::OnUseWhenDefend(std::unique_ptr<Card> && card, Dealer & dealer, const Actor & actor)
 {
-    return card->OnUseWhenDefend(content, actor, std::move(card));
+    return card->OnUseWhenDefend(dealer, actor, std::move(card));
 }
 
 } // namespace core

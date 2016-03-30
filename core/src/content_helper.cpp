@@ -22,39 +22,6 @@ StartingShuffle(Content & content)
     }
 }
 
-void
-PlayerDraw(Content & content)
-{
-    auto & undrawn = content.GetUndrawn();
-    if (undrawn.Empty()) {
-        auto & discarded = content.GetDiscarded();
-        while (!discarded.Empty()) {
-            undrawn.Push(discarded.Pop());
-        }
-        undrawn.Shuffle();
-    }
-    content.GetHand().Add(undrawn.Pop());
-}
-
-void
-MoveLeftAllElementals(Content & content)
-{
-    Field & field = content.GetField();
-    for (size_t row = 0; row < Field::row; ++row) {
-        for (size_t col = 0; col < Field::col; ++col) {
-            const auto & card = field.Peek(row, col);
-            if (!card.IsRavage()) {
-                continue;
-            }
-            if (col == 0) {
-                MoveOutElemental(content, row, col);
-            } else {
-                MoveElemental(field, row, col, row, col - 1);
-            }
-        }
-    }
-}
-
 namespace {
 
 bool
@@ -96,9 +63,9 @@ ActRevealActions(Content & content, const Actor & actor)
         return actor.RevealAction(content);
     };
     auto cardOnUse = [&actor, &content](std::unique_ptr<Card> && card) {
-        return Card::OnUseWhenReveal(std::move(card), content, actor);
+        // return Card::OnUseWhenReveal(std::move(card), content, actor);
     };
-    return ActActions(content, getAction, cardOnUse);
+    // return ActActions(content, getAction, cardOnUse);
 }
 
 bool
@@ -108,9 +75,9 @@ ActDefendActions(Content & content, const Actor & actor)
         return actor.DefendAction(content);
     };
     auto cardOnUse = [&actor, &content](std::unique_ptr<Card> && card) {
-        return Card::OnUseWhenDefend(std::move(card), content, actor);
+        // return Card::OnUseWhenDefend(std::move(card), content, actor);
     };
-    return ActActions(content, getAction, cardOnUse);
+    // return ActActions(content, getAction, cardOnUse);
 }
 
 bool
@@ -124,18 +91,6 @@ DiscardChooseFromHand(Content & content, const Actor & actor)
         return false;
     }
     return true;
-}
-
-void
-MoveOutElemental(Content & content, size_t fromRow, size_t fromCol)
-{
-    auto & field = content.GetField();
-    const auto & card = field.Peek(fromRow, fromCol);
-    if (!card.IsRavage()) {
-        throw std::logic_error("not an elemental");
-    }
-    content.DecreaseEdge(card.GetStrength());
-    field.Remove(fromRow, fromCol);
 }
 
 } // namespace core

@@ -6,8 +6,8 @@
 namespace cylvionpp {
 namespace core {
 
-class Content;
 class Actor;
+class Dealer;
 
 class Card {
 public:
@@ -25,14 +25,14 @@ public:
 
     virtual void SetBlaze() = 0;
 
-    static bool OnBeforeMove(std::unique_ptr<Card> && card, Content & content, const Actor & actor);
-    static bool OnUseWhenReveal(std::unique_ptr<Card> && card, Content & content, const Actor & actor);
-    static bool OnUseWhenDefend(std::unique_ptr<Card> && card, Content & content, const Actor & actor);
+    static bool OnBeforeMove(std::unique_ptr<Card> && card, Dealer & dealer, const Actor & actor);
+    static bool OnUseWhenReveal(std::unique_ptr<Card> && card, Dealer & dealer, const Actor & actor);
+    static bool OnUseWhenDefend(std::unique_ptr<Card> && card, Dealer & dealer, const Actor & actor);
 
 private:
-    virtual bool OnBeforeMove(Content & content, const Actor & actor, std::unique_ptr<Card> && self) = 0;
-    virtual bool OnUseWhenReveal(Content & content, const Actor & actor, std::unique_ptr<Card> && self) = 0;
-    virtual bool OnUseWhenDefend(Content & content, const Actor & actor, std::unique_ptr<Card> && self) = 0;
+    virtual bool OnBeforeMove(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && self) = 0;
+    virtual bool OnUseWhenReveal(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && self) = 0;
+    virtual bool OnUseWhenDefend(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && self) = 0;
 };
 
 } // namespace core
