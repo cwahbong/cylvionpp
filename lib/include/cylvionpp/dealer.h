@@ -1,6 +1,8 @@
 #ifndef CYLVION_DEALER_H
 #define CYLVION_DEALER_H
 
+#include "cylvionpp_export.h"
+
 #include <memory>
 
 namespace cylvionpp {
@@ -8,7 +10,7 @@ namespace cylvionpp {
 class Content;
 class Operation;
 
-class Dealer {
+class CYLVIONPP_EXPORT Dealer {
 public:
     virtual ~Dealer() = 0;
 
@@ -19,8 +21,6 @@ public:
 
     static std::unique_ptr<Dealer> New(std::unique_ptr<Content> content);
 };
-
-bool MoveLeftAllElementals(Dealer &);
 
 } // namespace cylvionpp
 

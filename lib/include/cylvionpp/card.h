@@ -1,6 +1,8 @@
 #ifndef CYLVIONPP_CARD_H
 #define CYLVIONPP_CARD_H
 
+#include "cylvionpp_export.h"
+
 #include <memory>
 
 namespace cylvionpp {
@@ -8,7 +10,7 @@ namespace cylvionpp {
 class Actor;
 class Dealer;
 
-class Card {
+class CYLVIONPP_EXPORT Card {
 public:
     virtual ~Card() = 0;
 

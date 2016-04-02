@@ -1,6 +1,8 @@
 #ifndef CYLVIONPP_DEALER_HELPER_H
 #define CYLVIONPP_DEALER_HELPER_H
 
+#include "cylvionpp_export.h"
+
 #include <cstdlib>
 
 namespace cylvionpp {
@@ -8,9 +10,9 @@ namespace cylvionpp {
 class Actor;
 class Dealer;
 
-bool MoveLeftAllElementals(Dealer & dealer);
-bool DiscardChooseFromHand(Dealer & dealer, const Actor & actor);
-bool ResolveSupport(Dealer & dealer, const Actor & actor, size_t row, size_t col);
+CYLVIONPP_EXPORT bool MoveLeftAllElementals(Dealer & dealer);
+CYLVIONPP_EXPORT bool DiscardChooseFromHand(Dealer & dealer, const Actor & actor);
+CYLVIONPP_EXPORT bool ResolveSupport(Dealer & dealer, const Actor & actor, size_t row, size_t col);
 
 } // namespace cylvionpp
 

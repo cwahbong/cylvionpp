@@ -1,6 +1,8 @@
 #ifndef CYLVIONPP_FIELD_H
 #define CYLVIONPP_FIELD_H
 
+#include "cylvionpp_export.h"
+
 #include <memory>
 
 namespace cylvionpp {
@@ -8,7 +10,7 @@ namespace cylvionpp {
 class Card;
 class Stack;
 
-class Field {
+class CYLVIONPP_EXPORT Field {
 public:
     virtual ~Field() = 0;
 
@@ -29,7 +31,7 @@ public:
 
 };
 
-void MoveElemental(Field & field, size_t fromRow, size_t fromCol, size_t toRow, size_t toCol);
+void CYLVIONPP_EXPORT MoveElemental(Field & field, size_t fromRow, size_t fromCol, size_t toRow, size_t toCol);
 
 } // namespace cylvionpp
 

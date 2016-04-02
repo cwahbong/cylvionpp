@@ -1,6 +1,8 @@
 #ifndef CYLVIONPP_INTRO_H
 #define CYLVIONPP_INTRO_H
 
+#include "cylvionpp_export.h"
+
 #include <memory>
 
 namespace cylvionpp {
@@ -9,7 +11,7 @@ class CardFactory;
 class Content;
 
 std::unique_ptr<Content>
-MakeIntroContent(CardFactory & cardFactory);
+CYLVIONPP_EXPORT MakeIntroContent(CardFactory & cardFactory);
 
 // TODO MakeFullGame
 

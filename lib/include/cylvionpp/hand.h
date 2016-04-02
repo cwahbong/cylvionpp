@@ -1,6 +1,8 @@
 #ifndef CYLVIONPP_HAND_H
 #define CYLVIONPP_HAND_H
 
+#include "cylvionpp_export.h"
+
 #include <cstdlib>
 #include <memory>
 
@@ -8,7 +10,7 @@ namespace cylvionpp {
 
 class Card;
 
-class Hand {
+class CYLVIONPP_EXPORT Hand {
 public:
     virtual ~Hand() = 0;
 

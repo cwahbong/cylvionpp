@@ -1,9 +1,11 @@
 #ifndef CYLVIONPP_STACK_H
 #define CYLVIONPP_STACK_H
 
+#include "cylvionpp_export.h"
+
 namespace cylvionpp {
 
-class Stack {
+class CYLVIONPP_EXPORT Stack {
 public:
     virtual ~Stack() = 0;
 

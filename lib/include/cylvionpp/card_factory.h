@@ -1,13 +1,15 @@
 #ifndef CYLVIONPP_CARD_FACTORY_H
 #define CYLVIONPP_CARD_FACTORY_H
 
+#include "cylvionpp_export.h"
+
 #include <memory>
 
 namespace cylvionpp {
 
 class Card;
 
-class CardFactory {
+class CYLVIONPP_EXPORT CardFactory {
 public:
     virtual std::unique_ptr<Card> NewNone() = 0;
     virtual std::unique_ptr<Card> NewFountain(unsigned cost, unsigned strength) = 0;
@@ -21,7 +23,7 @@ public:
     virtual std::unique_ptr<Card> NewSimoon() = 0;
 };
 
-std::unique_ptr<CardFactory> NewCardFactory();
+CYLVIONPP_EXPORT std::unique_ptr<CardFactory> NewCardFactory();
 
 } // namespace cylvionpp
 

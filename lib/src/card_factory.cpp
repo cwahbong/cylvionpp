@@ -5,6 +5,7 @@
 #include "cylvionpp/content.h"
 #include "cylvionpp/content_helper.h"
 #include "cylvionpp/dealer.h"
+#include "cylvionpp/dealer_helper.h"
 #include "cylvionpp/field.h"
 #include "cylvionpp/stack.h"
 #include "cylvionpp/operation.h"

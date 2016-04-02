@@ -1,6 +1,8 @@
 #ifndef CYLVIONPP_GAME_H
 #define CYLVIONPP_GAME_H
 
+#include "cylvionpp_export.h"
+
 #include <memory>
 
 namespace cylvionpp {
@@ -9,7 +11,7 @@ class Actor;
 class Observer;
 class Content;
 
-class Game {
+class CYLVIONPP_EXPORT Game {
 public:
     virtual ~Game() = 0;
 

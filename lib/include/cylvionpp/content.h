@@ -1,6 +1,8 @@
 #ifndef CYLVIONPP_CONTENT_H
 #define CYLVIONPP_CONTENT_H
 
+#include "cylvionpp_export.h"
+
 #include <memory>
 
 namespace cylvionpp {
@@ -10,7 +12,7 @@ class Field;
 class Hand;
 class Stack;
 
-class Content {
+class CYLVIONPP_EXPORT Content {
 public:
     virtual ~Content() = 0;
 

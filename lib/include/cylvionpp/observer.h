@@ -1,11 +1,13 @@
 #ifndef CYLVIONPP_OBSERVER_H
 #define CYLVIONPP_OBSERVER_H
 
+#include "cylvionpp_export.h"
+
 #include <memory>
 
 namespace cylvionpp {
 
-class EventReceiver {
+class CYLVIONPP_EXPORT EventReceiver {
 public:
     virtual ~EventReceiver() = 0;
 
