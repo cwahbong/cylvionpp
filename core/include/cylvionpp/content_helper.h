@@ -8,11 +8,11 @@ namespace core {
 
 class Actor;
 class Content;
+class Dealer;
 
 void StartingShuffle(Content & content);
-bool ActRevealActions(Content & content, const Actor & actor);
-bool ActDefendActions(Content & content, const Actor & actor);
-bool DiscardChooseFromHand(Content & content, const Actor & actor);
+bool ActRevealActions(Dealer & dealer, const Content & content, const Actor & actor);
+bool ActDefendActions(Dealer & dealer, const Content & content, const Actor & actor);
 
 } // namespace core
 } // namespace cylvionpp

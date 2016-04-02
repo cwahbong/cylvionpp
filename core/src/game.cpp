@@ -8,6 +8,7 @@
 #include "cylvionpp/content.h"
 #include "cylvionpp/content_helper.h"
 #include "cylvionpp/dealer.h"
+#include "cylvionpp/dealer_helper.h"
 #include "cylvionpp/field.h"
 #include "cylvionpp/hand.h"
 #include "cylvionpp/operation.h"
@@ -73,36 +74,29 @@ GameImpl::FieldHasRavage()
 bool
 GameImpl::ResolveSupports(unsigned order)
 {
-    // XXX
-    /* const auto & field = _dealer->GetContent().GetField();
-    size_t col = Field::col - 1;
+    const auto & field = _dealer->GetContent().GetField();
+    const size_t col = Field::col - 1;
     for (size_t row = 0; row < Field::row; ++row) {
         const auto & peeked = field.Peek(row, col);
         if (peeked.IsNone() || peeked.GetPriority() != order) {
             continue;
         }
-        auto card = field.Remove(row, col);
-        if (!Card::OnBeforeMove(std::move(card), *_dealer, *_actor)) {
+        if (!ResolveSupport(*_dealer, *_actor, row, col)) {
             return false;
         }
-        if (card) {
-            field.Put(row, col, std::move(card));
-        }
-    } */
+    }
     return true;
 }
 
 bool
 GameImpl::Reveal()
 {
-    const auto & field = _dealer->GetContent().GetField();
     for (size_t row = 0; row < Field::row; ++row) {
-        // XXX Stack & ravage = field.GetRavageStack(row);
-        // field.Put(row, Field::col - 1, ravage.Pop());
+        _dealer->Perform(*_dealer->GetOperationFactory().RevealRavage(row));
     }
-    /* XXX if (!ActRevealActions(*_content, *_actor)) {
+    if (!ActRevealActions(*_dealer, *_actor)) {
         return false;
-    } */
+    }
     for (unsigned i = 0; i < 4; ++i) {
         ResolveSupports(i);
     }
@@ -125,12 +119,12 @@ GameImpl::Draw()
 bool
 GameImpl::Defend()
 {
-    /* XXX if (!ActDefendActions(*_content, *_actor)) {
+    if (!ActDefendActions(*_dealer, *_actor)) {
         return false;
-    } */
+    }
     const auto & hand = _dealer->GetContent().GetHand();
     while (hand.Size() > 10) {
-        // XXX DiscardChooseFromHand(*_content, *_actor);
+        DiscardChooseFromHand(*_dealer, *_actor);
     }
     return true;
 }
@@ -149,7 +143,6 @@ GameImpl::LastMove()
 bool
 GameImpl::Run()
 {
-    // XXX StartingShuffle(*_content);
     while (RavageStackHasRavage()) {
         if (!Reveal() || !Move() || !Draw() || !Defend()) {
             return false;

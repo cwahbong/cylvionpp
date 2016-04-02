@@ -1,5 +1,6 @@
 #include "cylvionpp/dealer_helper.h"
 
+#include "cylvionpp/actor.h"
 #include "cylvionpp/card.h"
 #include "cylvionpp/content.h"
 #include "cylvionpp/dealer.h"
@@ -28,6 +29,35 @@ MoveLeftAllElementals(Dealer & dealer)
             }
         }
     }
+    return true;
+}
+
+bool
+DiscardChooseFromHand(Dealer & dealer, const Actor & actor)
+{
+    auto idx = actor.AnswerIndex("discard hand");
+    return dealer.Perform(*dealer.GetOperationFactory().PlayerDiscardHand(idx));
+}
+
+bool
+ResolveSupport(Dealer & dealer, const Actor & actor, size_t row, size_t col)
+{
+    /* auto card = field.Remove(row, col);
+    if (!Card::OnBeforeMove(std::move(card), *_dealer, *_actor)) {
+        return false;
+    } */
+    return dealer.Perform(*dealer.GetOperationFactory().RemoveFromField(row, col));
+}
+
+bool
+ActRevealActions(Dealer & dealer, const Actor & actor)
+{
+    return true;
+}
+
+bool
+ActDefendActions(Dealer & dealer, const Actor & actor)
+{
     return true;
 }
 

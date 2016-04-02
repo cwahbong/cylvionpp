@@ -6,6 +6,7 @@
 namespace cylvionpp {
 namespace core {
 
+class Card;
 class Operation;
 
 class OperationFactory {
@@ -13,8 +14,13 @@ public:
     virtual ~OperationFactory() = 0;
 
     virtual std::unique_ptr<Operation> PlayerDraw(size_t count) = 0;
+    virtual std::unique_ptr<Operation> PlayerDiscardHand(size_t idx) = 0;
+    virtual std::unique_ptr<Operation> PutCylvan(size_t row, size_t col, std::unique_ptr<Card> &&) = 0;
+    virtual std::unique_ptr<Operation> RevealRavage(size_t row) = 0;
     virtual std::unique_ptr<Operation> MoveElemental(size_t fromRow, size_t fromCol, size_t toRow, size_t toCol) = 0;
     virtual std::unique_ptr<Operation> MoveOutElemental(size_t row, size_t col) = 0;
+    virtual std::unique_ptr<Operation> BlazeElemental(size_t row, size_t col) = 0;
+    virtual std::unique_ptr<Operation> RemoveFromField(size_t row, size_t col) = 0;
 
     static std::unique_ptr<OperationFactory> New();
 };

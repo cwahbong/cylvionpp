@@ -60,18 +60,60 @@ MoveOutElemental(Content & content, size_t fromRow, size_t fromCol)
     field.Remove(fromRow, fromCol);
 } */
 
+/*
+void
+RevealRavage()
+{
+        // XXX Stack & ravage = field.GetRavageStack(row);
+        // field.Put(row, Field::col - 1, ravage.Pop());
+}
+*/
 
 class OperationFactoryImpl: public OperationFactory {
 public:
     std::unique_ptr<Operation> PlayerDraw(size_t count) override;
+    std::unique_ptr<Operation> PlayerDiscardHand(size_t idx) override;
+    std::unique_ptr<Operation> PutCylvan(size_t row, size_t col, std::unique_ptr<Card> &&) override;
+    std::unique_ptr<Operation> RevealRavage(size_t row) override;
     std::unique_ptr<Operation> MoveElemental(size_t fromRow, size_t fromCol, size_t toRow, size_t toCol) override;
     std::unique_ptr<Operation> MoveOutElemental(size_t row, size_t col) override;
+    std::unique_ptr<Operation> BlazeElemental(size_t row, size_t col) override;
+    std::unique_ptr<Operation> RemoveFromField(size_t row, size_t col) override;
 };
 
 std::unique_ptr<Operation>
 OperationFactoryImpl::PlayerDraw(size_t count)
 {
     return std::make_unique<PlayerDrawOperation>(count);
+}
+
+std::unique_ptr<Operation>
+OperationFactoryImpl::PlayerDiscardHand(size_t idx)
+{
+/* bool
+DiscardFromHand(content, idx)
+{
+    auto & hand = content.GetHand();
+    try {
+        content.GetDiscarded().Push(hand.Remove(idx));
+    } catch (const std::out_of_range &) {
+        return false;
+    }
+    return true;
+} */
+    return nullptr;
+}
+
+std::unique_ptr<Operation>
+OperationFactoryImpl::PutCylvan(size_t row, size_t col, std::unique_ptr<Card> &&)
+{
+    return nullptr;
+}
+
+std::unique_ptr<Operation>
+OperationFactoryImpl::RevealRavage(size_t row)
+{
+    return nullptr;
 }
 
 std::unique_ptr<Operation>
@@ -82,6 +124,18 @@ OperationFactoryImpl::MoveElemental(size_t fromRow, size_t fromCol, size_t toRow
 
 std::unique_ptr<Operation>
 OperationFactoryImpl::MoveOutElemental(size_t row, size_t col)
+{
+    return nullptr;
+}
+
+std::unique_ptr<Operation>
+OperationFactoryImpl::BlazeElemental(size_t row, size_t col)
+{
+    return nullptr;
+}
+
+std::unique_ptr<Operation>
+OperationFactoryImpl::RemoveFromField(size_t row, size_t col)
 {
     return nullptr;
 }

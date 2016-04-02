@@ -111,11 +111,9 @@ private:
 bool
 OnFieldCylvan::OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && transfer)
 {
-    const auto & field = dealer.GetContent().GetField();
     size_t row = actor.AnswerIndex("put field row");
     size_t col = actor.AnswerIndex("put field col");
-    return true;
-    // XXX return field.Put(row, col, std::move(transfer));
+    return dealer.Perform(*dealer.GetOperationFactory().PutCylvan(row, col, std::move(transfer)));
 }
 
 class Fountain: public OnFieldCylvan {
@@ -173,9 +171,9 @@ Whale::OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> &
     size_t fromCol = actor.AnswerIndex("elem from col");
     size_t toRow = actor.AnswerIndex("elem to row");
     size_t toCol = actor.AnswerIndex("elem to col");
-    // XXX MoveElemental(content.GetField(), fromRow, fromCol, toRow, toCol);
+    auto & factory = dealer.GetOperationFactory();
+    return dealer.Perform(*factory.MoveElemental(fromRow, fromCol, toRow, toCol));
     // XXX content.GetDiscarded().Push(std::move(transfer));
-    return true;
 }
 
 class Elephant: public DefenseAnimal {
@@ -195,9 +193,9 @@ Elephant::OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card
     if (!field.Peek(row, col).IsNone()) {
         return false;
     }
-    // XXX field.Remove(row, col);
+    auto & factory = dealer.GetOperationFactory();
+    return dealer.Perform(*factory.RemoveFromField(row, col));
     // XXX content.GetDiscarded().Push(std::move(transfer));
-    return true;
 }
 
 class Hedgehogs: public Animal {
@@ -219,9 +217,9 @@ Hedgehogs::OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Car
     if (!field.Peek(row, col).IsRavage()) {
         return false;
     }
-    // XXX field.Remove(row, col);
+    auto & factory = dealer.GetOperationFactory();
+    return dealer.Perform(*factory.RemoveFromField(row, col));
     // XXX content.GetDiscarded().Push(std::move(transfer));
-    return true;
 }
 
 class Owl: public DefenseAnimal {
@@ -297,7 +295,6 @@ Blaze::OnBeforeMove(Dealer & dealer, const Actor &, std::unique_ptr<Card> && sel
             // XXX field.Peek(row, col).SetBlaze();
         }
     }
-    self.reset(); // put to discarded elemental instead
     return false;
 }
 
