@@ -31,10 +31,8 @@ public:
     void SetBlaze() override { throw std::logic_error("None"); }
 
     bool OnBeforeMove(Dealer &, const Actor &, size_t, size_t) const override { throw std::logic_error("None"); }
-
-private:
-    bool OnUseWhenReveal(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
-    bool OnUseWhenDefend(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
+    bool OnUseWhenReveal(Dealer &, const Actor &, size_t) const override { throw std::logic_error("None"); }
+    bool OnUseWhenDefend(Dealer &, const Actor &, size_t) const override { throw std::logic_error("None"); }
 };
 
 class NotNone: public Card {
@@ -55,48 +53,49 @@ public:
     void SetBlaze() override {/* Empty. */}
 
     bool OnBeforeMove(Dealer &, const Actor &, size_t, size_t) const override { return true; }
-    bool OnUseWhenReveal(Dealer & content, const Actor & actor, std::unique_ptr<Card> &&) override;
-    bool OnUseWhenDefend(Dealer & content, const Actor & actor, std::unique_ptr<Card> &&) override;
+    bool OnUseWhenReveal(Dealer & content, const Actor & actor, size_t) const override;
+    bool OnUseWhenDefend(Dealer & content, const Actor & actor, size_t) const override;
 
 private:
-    virtual bool CanUseWhenReveal() = 0;
-    virtual bool CanUseWhenDefend() = 0;
-    bool OnUse(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> &&);
-    virtual bool OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> &&) = 0;
+    virtual bool CanUseWhenReveal() const = 0;
+    virtual bool CanUseWhenDefend() const = 0;
+    bool OnUse(Dealer & dealer, const Actor & actor, size_t) const;
+    virtual bool OnUseEffect(Dealer & dealer, const Actor & actor, size_t) const = 0;
 
     unsigned _cost;
 };
 
 bool
-Cylvan::OnUse(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && self)
+Cylvan::OnUse(Dealer & dealer, const Actor & actor, size_t idx) const
 {
     const auto & content = dealer.GetContent();
     if (content.GetMana() < GetCost()) {
         return false;
     }
-    if (!OnUseEffect(dealer, actor, std::move(self))) {
+    if (!OnUseEffect(dealer, actor, idx)) {
         return false;
     }
     // XXX content.SetMana(content.GetMana() - GetCost());
+    // XXX move to discard pile
     return true;
 }
 
 bool
-Cylvan::OnUseWhenReveal(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && self)
+Cylvan::OnUseWhenReveal(Dealer & dealer, const Actor & actor, size_t idx) const
 {
     if (!CanUseWhenReveal()) {
         return false;
     }
-    return OnUse(dealer, actor, std::move(self));
+    return OnUse(dealer, actor, idx);
 }
 
 bool
-Cylvan::OnUseWhenDefend(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && self)
+Cylvan::OnUseWhenDefend(Dealer & dealer, const Actor & actor, size_t idx) const
 {
     if (!CanUseWhenDefend()) {
         return false;
     }
-    return OnUse(dealer, actor, std::move(self));
+    return OnUse(dealer, actor, idx);
 }
 
 class OnFieldCylvan: public Cylvan {
@@ -104,17 +103,17 @@ public:
     OnFieldCylvan(unsigned cost): Cylvan(cost) {/* Empty. */}
 
 private:
-    bool CanUseWhenReveal() override { return false; }
-    bool CanUseWhenDefend() override { return true; }
-    bool OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && transfer) override;
+    bool CanUseWhenReveal() const override { return false; }
+    bool CanUseWhenDefend() const override { return true; }
+    bool OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const override;
 };
 
 bool
-OnFieldCylvan::OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && transfer)
+OnFieldCylvan::OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const
 {
     size_t row = actor.AnswerIndex("put field row");
     size_t col = actor.AnswerIndex("put field col");
-    return dealer.Perform(*dealer.GetOperationFactory().PutCylvan(row, col, std::move(transfer)));
+    return dealer.Perform(*dealer.GetOperationFactory().PutCylvan(idx, row, col));
 }
 
 class Fountain: public OnFieldCylvan {
@@ -152,8 +151,8 @@ public:
     DefenseAnimal(unsigned cost): Animal(cost) {/* Empty. */}
 
 private:
-    bool CanUseWhenReveal() override { return false; }
-    bool CanUseWhenDefend() override { return true; }
+    bool CanUseWhenReveal() const override { return false; }
+    bool CanUseWhenDefend() const override { return true; }
 };
 
 class Whale: public DefenseAnimal {
@@ -161,11 +160,11 @@ public:
     Whale(): DefenseAnimal(0) {/* Empty. */}
 
 private:
-    bool OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> &&) override;
+    bool OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const override;
 };
 
 bool
-Whale::OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && transfer)
+Whale::OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const
 {
     // TODO error handling
     size_t fromRow = actor.AnswerIndex("elem from row");
@@ -174,7 +173,6 @@ Whale::OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> &
     size_t toCol = actor.AnswerIndex("elem to col");
     auto & factory = dealer.GetOperationFactory();
     return dealer.Perform(*factory.MoveElemental(fromRow, fromCol, toRow, toCol));
-    // XXX content.GetDiscarded().Push(std::move(transfer));
 }
 
 class Elephant: public DefenseAnimal {
@@ -182,11 +180,11 @@ public:
     Elephant(): DefenseAnimal(1) {/* Empty. */}
 
 private:
-    bool OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> &&) override;
+    bool OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const override;
 };
 
 bool
-Elephant::OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && transfer)
+Elephant::OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const
 {
     size_t row = actor.AnswerIndex("elem row");
     size_t col = actor.AnswerIndex("elem col");
@@ -196,7 +194,6 @@ Elephant::OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card
     }
     auto & factory = dealer.GetOperationFactory();
     return dealer.Perform(*factory.RemoveFromField(row, col));
-    // XXX content.GetDiscarded().Push(std::move(transfer));
 }
 
 class Hedgehogs: public Animal {
@@ -204,13 +201,13 @@ public:
     Hedgehogs(): Animal(0) {/* Empty. */}
 
 private:
-    bool CanUseWhenReveal() override { return true; }
-    bool CanUseWhenDefend() override { return false; }
-    bool OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> &&) override;
+    bool CanUseWhenReveal() const override { return true; }
+    bool CanUseWhenDefend() const override { return false; }
+    bool OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const override;
 };
 
 bool
-Hedgehogs::OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && transfer)
+Hedgehogs::OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const
 {
     const size_t row = actor.AnswerIndex("elem row");
     const size_t col = Field::col - 1;
@@ -220,7 +217,6 @@ Hedgehogs::OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Car
     }
     auto & factory = dealer.GetOperationFactory();
     return dealer.Perform(*factory.RemoveFromField(row, col));
-    // XXX content.GetDiscarded().Push(std::move(transfer));
 }
 
 class Owl: public DefenseAnimal {
@@ -228,17 +224,13 @@ public:
     Owl(): DefenseAnimal(1) {/* Empty. */}
 
 private:
-    bool OnUseEffect(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> &&) override;
+    bool OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const override;
 };
 
 bool
-Owl::OnUseEffect(Dealer & dealer, const Actor &, std::unique_ptr<Card> && transfer)
+Owl::OnUseEffect(Dealer & dealer, const Actor &, size_t idx) const
 {
-    if (!dealer.Perform(*dealer.GetOperationFactory().PlayerDraw(3))) {
-        return false;
-    }
-    // content.GetDiscarded().Push(std::move(transfer));
-    return true;
+    return dealer.Perform(*dealer.GetOperationFactory().PlayerDraw(3));
 }
 
 class Ravage: public NotNone {
@@ -249,8 +241,8 @@ public:
     bool IsCylvan() const override { return false; }
     bool IsRavage() const override { return true; }
 
-    bool OnUseWhenReveal(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("Ravage is not usable"); }
-    bool OnUseWhenDefend(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("Ravage is not usable"); }
+    bool OnUseWhenReveal(Dealer &, const Actor &, size_t) const override { throw std::logic_error("Ravage is not usable"); }
+    bool OnUseWhenDefend(Dealer &, const Actor &, size_t) const override { throw std::logic_error("Ravage is not usable"); }
 };
 
 class Elemental: public Ravage {

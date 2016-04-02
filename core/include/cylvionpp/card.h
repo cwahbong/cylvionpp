@@ -26,13 +26,8 @@ public:
     virtual void SetBlaze() = 0;
 
     virtual bool OnBeforeMove(Dealer & dealer, const Actor & actor, size_t row, size_t col) const = 0;
-
-    static bool OnUseWhenReveal(std::unique_ptr<Card> && card, Dealer & dealer, const Actor & actor);
-    static bool OnUseWhenDefend(std::unique_ptr<Card> && card, Dealer & dealer, const Actor & actor);
-
-private:
-    virtual bool OnUseWhenReveal(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && self) = 0;
-    virtual bool OnUseWhenDefend(Dealer & dealer, const Actor & actor, std::unique_ptr<Card> && self) = 0;
+    virtual bool OnUseWhenReveal(Dealer & dealer, const Actor & actor, size_t idx) const = 0;
+    virtual bool OnUseWhenDefend(Dealer & dealer, const Actor & actor, size_t idx) const = 0;
 };
 
 } // namespace core

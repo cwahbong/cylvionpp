@@ -11,8 +11,8 @@ class Content;
 class Dealer;
 
 void StartingShuffle(Content & content);
-bool ActRevealActions(Dealer & dealer, const Content & content, const Actor & actor);
-bool ActDefendActions(Dealer & dealer, const Content & content, const Actor & actor);
+bool ActRevealActions(Dealer & dealer, const Actor & actor);
+bool ActDefendActions(Dealer & dealer, const Actor & actor);
 
 } // namespace core
 } // namespace cylvionpp

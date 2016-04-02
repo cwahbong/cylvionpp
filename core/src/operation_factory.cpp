@@ -73,7 +73,7 @@ class OperationFactoryImpl: public OperationFactory {
 public:
     std::unique_ptr<Operation> PlayerDraw(size_t count) override;
     std::unique_ptr<Operation> PlayerDiscardHand(size_t idx) override;
-    std::unique_ptr<Operation> PutCylvan(size_t row, size_t col, std::unique_ptr<Card> &&) override;
+    std::unique_ptr<Operation> PutCylvan(size_t idx, size_t row, size_t col) override;
     std::unique_ptr<Operation> RevealRavage(size_t row) override;
     std::unique_ptr<Operation> MoveElemental(size_t fromRow, size_t fromCol, size_t toRow, size_t toCol) override;
     std::unique_ptr<Operation> MoveOutElemental(size_t row, size_t col) override;
@@ -105,7 +105,7 @@ DiscardFromHand(content, idx)
 }
 
 std::unique_ptr<Operation>
-OperationFactoryImpl::PutCylvan(size_t row, size_t col, std::unique_ptr<Card> &&)
+OperationFactoryImpl::PutCylvan(size_t idx, size_t row, size_t col)
 {
     return nullptr;
 }

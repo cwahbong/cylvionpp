@@ -46,17 +46,5 @@ ResolveSupport(Dealer & dealer, const Actor & actor, size_t row, size_t col)
     return card.OnBeforeMove(dealer, actor, row, col);
 }
 
-bool
-ActRevealActions(Dealer & dealer, const Actor & actor)
-{
-    return true;
-}
-
-bool
-ActDefendActions(Dealer & dealer, const Actor & actor)
-{
-    return true;
-}
-
 } // namespace core
 } // namespace cylvionpp

@@ -12,8 +12,6 @@ class Dealer;
 bool MoveLeftAllElementals(Dealer & dealer);
 bool DiscardChooseFromHand(Dealer & dealer, const Actor & actor);
 bool ResolveSupport(Dealer & dealer, const Actor & actor, size_t row, size_t col);
-bool ActRevealActions(Dealer & dealer, const Actor & actor);
-bool ActDefendActions(Dealer & dealer, const Actor & actor);
 
 } // namespace core
 } // namespace cylvionpp

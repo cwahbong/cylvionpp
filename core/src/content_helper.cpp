@@ -6,6 +6,7 @@
 #include "cylvionpp/actor.h"
 #include "cylvionpp/card.h"
 #include "cylvionpp/content.h"
+#include "cylvionpp/dealer.h"
 #include "cylvionpp/field.h"
 #include "cylvionpp/hand.h"
 #include "cylvionpp/stack.h"
@@ -25,8 +26,9 @@ StartingShuffle(Content & content)
 namespace {
 
 bool
-ActActions(const Content & content, std::function<Action ()> getAction, std::function<bool (std::unique_ptr<Card> &&)> cardOnUse)
+ActActions(Dealer & dealer, std::function<Action ()> getAction, std::function<bool (size_t)> cardOnUse)
 {
+    const auto & content = dealer.GetContent();
     const auto & hand = content.GetHand();
     const auto & discarded = content.GetDiscarded();
     while (true) {
@@ -38,18 +40,15 @@ ActActions(const Content & content, std::function<Action ()> getAction, std::fun
         std::stringstream ss(action.additional["idx"]);
         ss >> idx;
         // TODO handle out or range
-        /* std::unique_ptr<Card> card = hand.Remove(idx);
+        // std::unique_ptr<Card> card = hand.Remove(idx);
         if (action.additional["type"] == "discard") {
-            discarded.Push(std::move(card));
-            content.SetMana(content.GetMana() + 1); // XXX
+            // discarded.Push(std::move(card));
+            // content.SetMana(content.GetMana() + 1); // XXX
         } else if (action.additional["type"] == "use") {
-            if (!cardOnUse(std::move(card))) {
+            if (!cardOnUse(idx)) {
                 return false;
             }
         }
-        if (card) {
-            hand.Add(std::move(card));
-        } */
     }
     return true;
 }
@@ -57,27 +56,29 @@ ActActions(const Content & content, std::function<Action ()> getAction, std::fun
 } // namespace
 
 bool
-ActRevealActions(Dealer & dealer, const Content & content, const Actor & actor)
+ActRevealActions(Dealer & dealer, const Actor & actor)
 {
-    auto getAction = [&actor, &content]() {
-        return actor.RevealAction(content);
+    auto getAction = [&actor, &dealer]() {
+        return actor.RevealAction(dealer.GetContent());
     };
-    auto cardOnUse = [&actor, &dealer](std::unique_ptr<Card> && card) {
-        return Card::OnUseWhenReveal(std::move(card), dealer, actor);
+    auto cardOnUse = [&actor, &dealer](size_t idx) {
+        const auto & card = dealer.GetContent().GetHand().Peek(idx);
+        return card->OnUseWhenReveal(dealer, actor, idx);
     };
-    // return ActActions(content, getAction, cardOnUse);
+    return ActActions(dealer, getAction, cardOnUse);
 }
 
 bool
-ActDefendActions(Dealer & dealer, const Content & content, const Actor & actor)
+ActDefendActions(Dealer & dealer, const Actor & actor)
 {
-    auto getAction = [&actor, &content]() {
-        return actor.DefendAction(content);
+    auto getAction = [&actor, &dealer]() {
+        return actor.DefendAction(dealer.GetContent());
     };
-    auto cardOnUse = [&actor, &content](std::unique_ptr<Card> && card) {
-        // return Card::OnUseWhenDefend(std::move(card), content, actor);
+    auto cardOnUse = [&actor, &dealer](size_t idx) {
+        const auto & card = dealer.GetContent().GetHand().Peek(idx);
+        return card->OnUseWhenDefend(dealer, actor, idx);
     };
-    // return ActActions(content, getAction, cardOnUse);
+    return ActActions(dealer, getAction, cardOnUse);
 }
 
 } // namespace core
