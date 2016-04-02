@@ -1,6 +1,6 @@
 PROJECT(cylvionppcore)
 
-AUX_SOURCE_DIRECTORY(src cylvionppcore_SOURCES)
+FILE(GLOB_RECURSE cylvionppcore_SOURCES src *.cpp)
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${cylvionppcore_SOURCES})
 TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC include)

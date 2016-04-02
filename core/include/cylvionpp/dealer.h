@@ -18,9 +18,8 @@ public:
 
     // TODO add observer for dealer
     virtual bool Perform(Operation &) = 0;
-    virtual OperationFactory & GetOperationFactory() const = 0;
 
-    static std::unique_ptr<Dealer> New(std::unique_ptr<Content> content, std::unique_ptr<OperationFactory> operationFactory);
+    static std::unique_ptr<Dealer> New(std::unique_ptr<Content> content);
 };
 
 bool MoveLeftAllElementals(Dealer &);

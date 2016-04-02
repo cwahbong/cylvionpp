@@ -8,7 +8,6 @@
 #include "cylvionpp/field.h"
 #include "cylvionpp/stack.h"
 #include "cylvionpp/operation.h"
-#include "cylvionpp/operation_factory.h"
 
 
 namespace cylvionpp {
@@ -113,7 +112,7 @@ OnFieldCylvan::OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) con
 {
     size_t row = actor.AnswerIndex("put field row");
     size_t col = actor.AnswerIndex("put field col");
-    return dealer.Perform(*dealer.GetOperationFactory().PutCylvan(idx, row, col));
+    return dealer.Perform(*operation::PutCylvan(idx, row, col));
 }
 
 class Fountain: public OnFieldCylvan {
@@ -171,8 +170,7 @@ Whale::OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const
     size_t fromCol = actor.AnswerIndex("elem from col");
     size_t toRow = actor.AnswerIndex("elem to row");
     size_t toCol = actor.AnswerIndex("elem to col");
-    auto & factory = dealer.GetOperationFactory();
-    return dealer.Perform(*factory.MoveElemental(fromRow, fromCol, toRow, toCol));
+    return dealer.Perform(*operation::MoveElemental(fromRow, fromCol, toRow, toCol));
 }
 
 class Elephant: public DefenseAnimal {
@@ -192,8 +190,7 @@ Elephant::OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const
     if (!field.Peek(row, col).IsNone()) {
         return false;
     }
-    auto & factory = dealer.GetOperationFactory();
-    return dealer.Perform(*factory.RemoveFromField(row, col));
+    return dealer.Perform(*operation::RemoveFromField(row, col));
 }
 
 class Hedgehogs: public Animal {
@@ -215,8 +212,7 @@ Hedgehogs::OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const
     if (!field.Peek(row, col).IsRavage()) {
         return false;
     }
-    auto & factory = dealer.GetOperationFactory();
-    return dealer.Perform(*factory.RemoveFromField(row, col));
+    return dealer.Perform(*operation::RemoveFromField(row, col));
 }
 
 class Owl: public DefenseAnimal {
@@ -230,7 +226,7 @@ private:
 bool
 Owl::OnUseEffect(Dealer & dealer, const Actor &, size_t idx) const
 {
-    return dealer.Perform(*dealer.GetOperationFactory().PlayerDraw(3));
+    return dealer.Perform(*operation::PlayerDraw(3));
 }
 
 class Ravage: public NotNone {
@@ -284,7 +280,7 @@ Support::OnBeforeMove(Dealer & dealer, const Actor & actor, size_t row, size_t c
     if (!OnBeforeMoveEffect(dealer, actor, row, col)) {
         return false;
     }
-    return dealer.Perform(*dealer.GetOperationFactory().RemoveFromField(row, col));
+    return dealer.Perform(*operation::RemoveFromField(row, col));
 }
 
 class Blaze: public Support {

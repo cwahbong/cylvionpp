@@ -12,7 +12,6 @@
 #include "cylvionpp/field.h"
 #include "cylvionpp/hand.h"
 #include "cylvionpp/operation.h"
-#include "cylvionpp/operation_factory.h"
 #include "cylvionpp/stack.h"
 
 namespace cylvionpp {
@@ -47,7 +46,7 @@ GameImpl::GameImpl(
         std::unique_ptr<Content> content):
     _actor(actor),
     _observer(observer),
-    _dealer(Dealer::New(std::move(content), OperationFactory::New()))
+    _dealer(Dealer::New(std::move(content)))
 {/* Empty.*/}
 
 bool
@@ -92,7 +91,7 @@ bool
 GameImpl::Reveal()
 {
     for (size_t row = 0; row < Field::row; ++row) {
-        _dealer->Perform(*_dealer->GetOperationFactory().RevealRavage(row));
+        _dealer->Perform(*operation::RevealRavage(row));
     }
     if (!ActRevealActions(*_dealer, *_actor)) {
         return false;
@@ -113,7 +112,7 @@ GameImpl::Move()
 bool
 GameImpl::Draw()
 {
-    return _dealer->Perform(*_dealer->GetOperationFactory().PlayerDraw(3));
+    return _dealer->Perform(*operation::PlayerDraw(3));
 }
 
 bool

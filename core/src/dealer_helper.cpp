@@ -6,7 +6,6 @@
 #include "cylvionpp/dealer.h"
 #include "cylvionpp/field.h"
 #include "cylvionpp/operation.h"
-#include "cylvionpp/operation_factory.h"
 
 namespace cylvionpp {
 namespace core {
@@ -15,7 +14,6 @@ bool
 MoveLeftAllElementals(Dealer & dealer)
 {
     const auto & field = dealer.GetContent().GetField();
-    auto & operationFactory = dealer.GetOperationFactory();
     for (size_t row = 0; row < Field::row; ++row) {
         for (size_t col = 0; col < Field::col; ++col) {
             const auto & card = field.Peek(row, col);
@@ -23,9 +21,9 @@ MoveLeftAllElementals(Dealer & dealer)
                 continue;
             }
             if (col == 0) {
-                dealer.Perform(*operationFactory.MoveOutElemental(row, col));
+                dealer.Perform(*operation::MoveOutElemental(row, col));
             } else {
-                dealer.Perform(*operationFactory.MoveElemental(row, col, row, col - 1));
+                dealer.Perform(*operation::MoveElemental(row, col, row, col - 1));
             }
         }
     }
@@ -36,7 +34,7 @@ bool
 DiscardChooseFromHand(Dealer & dealer, const Actor & actor)
 {
     auto idx = actor.AnswerIndex("discard hand");
-    return dealer.Perform(*dealer.GetOperationFactory().PlayerDiscardHand(idx));
+    return dealer.Perform(*operation::PlayerDiscardHand(idx));
 }
 
 bool
