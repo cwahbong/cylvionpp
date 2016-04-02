@@ -43,11 +43,7 @@ bool
 ResolveSupport(Dealer & dealer, const Actor & actor, size_t row, size_t col)
 {
     const auto & card = dealer.GetContent().GetField().Peek(row, col);
-    if (!card.OnBeforeMove(dealer, actor)) {
-        return false;
-    }
-    // XXX RemoveFromField should be perform in OnBeforeMove
-    return dealer.Perform(*dealer.GetOperationFactory().RemoveFromField(row, col));
+    return card.OnBeforeMove(dealer, actor, row, col);
 }
 
 bool

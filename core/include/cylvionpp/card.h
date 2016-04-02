@@ -25,7 +25,7 @@ public:
 
     virtual void SetBlaze() = 0;
 
-    virtual bool OnBeforeMove(Dealer & dealer, const Actor & actor) const = 0;
+    virtual bool OnBeforeMove(Dealer & dealer, const Actor & actor, size_t row, size_t col) const = 0;
 
     static bool OnUseWhenReveal(std::unique_ptr<Card> && card, Dealer & dealer, const Actor & actor);
     static bool OnUseWhenDefend(std::unique_ptr<Card> && card, Dealer & dealer, const Actor & actor);

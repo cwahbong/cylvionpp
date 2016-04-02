@@ -30,7 +30,7 @@ public:
 
     void SetBlaze() override { throw std::logic_error("None"); }
 
-    bool OnBeforeMove(Dealer &, const Actor &) const override { throw std::logic_error("None"); }
+    bool OnBeforeMove(Dealer &, const Actor &, size_t, size_t) const override { throw std::logic_error("None"); }
 
 private:
     bool OnUseWhenReveal(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
@@ -54,7 +54,7 @@ public:
 
     void SetBlaze() override {/* Empty. */}
 
-    bool OnBeforeMove(Dealer &, const Actor &) const override { return true; }
+    bool OnBeforeMove(Dealer &, const Actor &, size_t, size_t) const override { return true; }
     bool OnUseWhenReveal(Dealer & content, const Actor & actor, std::unique_ptr<Card> &&) override;
     bool OnUseWhenDefend(Dealer & content, const Actor & actor, std::unique_ptr<Card> &&) override;
 
@@ -265,7 +265,7 @@ public:
 
     void SetBlaze() override { _enhanced = true; }
 
-    bool OnBeforeMove(Dealer &, const Actor &) const override { return true; }
+    bool OnBeforeMove(Dealer &, const Actor &, size_t, size_t) const override { return true; }
 
 private:
     bool _enhanced;
@@ -279,16 +279,30 @@ class Support: public Ravage {
     bool IsBlazing() const override { return false; }
 
     void SetBlaze() override {/* Empty. */}
+
+    bool OnBeforeMove(Dealer & dealer, const Actor & actor, size_t row, size_t col) const override final;
+
+private:
+    virtual bool OnBeforeMoveEffect(Dealer & dealer, const Actor & actor, size_t row, size_t col) const = 0;
 };
+
+bool
+Support::OnBeforeMove(Dealer & dealer, const Actor & actor, size_t row, size_t col) const
+{
+    if (!OnBeforeMoveEffect(dealer, actor, row, col)) {
+        return false;
+    }
+    return dealer.Perform(*dealer.GetOperationFactory().RemoveFromField(row, col));
+}
 
 class Blaze: public Support {
     unsigned GetPriority() const override { return 2; }
 
-    bool OnBeforeMove(Dealer &, const Actor &) const override;
+    bool OnBeforeMoveEffect(Dealer &, const Actor &, size_t, size_t) const override;
 };
 
 bool
-Blaze::OnBeforeMove(Dealer & dealer, const Actor &) const
+Blaze::OnBeforeMoveEffect(Dealer & dealer, const Actor &, size_t, size_t) const
 {
     const auto & field = dealer.GetContent().GetField();
     for (size_t row = 0; row < Field::row; ++row) {
@@ -302,11 +316,11 @@ Blaze::OnBeforeMove(Dealer & dealer, const Actor &) const
 class Simoon: public Support {
     unsigned GetPriority() const override { return 3; }
 
-    bool OnBeforeMove(Dealer &, const Actor &) const override;
+    bool OnBeforeMoveEffect(Dealer &, const Actor &, size_t, size_t) const override;
 };
 
 bool
-Simoon::OnBeforeMove(Dealer & dealer, const Actor &) const
+Simoon::OnBeforeMoveEffect(Dealer & dealer, const Actor &, size_t, size_t) const
 {
     MoveLeftAllElementals(dealer);
     return false;
