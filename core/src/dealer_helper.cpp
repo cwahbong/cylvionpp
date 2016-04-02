@@ -42,10 +42,11 @@ DiscardChooseFromHand(Dealer & dealer, const Actor & actor)
 bool
 ResolveSupport(Dealer & dealer, const Actor & actor, size_t row, size_t col)
 {
-    /* auto card = field.Remove(row, col);
-    if (!Card::OnBeforeMove(std::move(card), *_dealer, *_actor)) {
+    const auto & card = dealer.GetContent().GetField().Peek(row, col);
+    if (!card.OnBeforeMove(dealer, actor)) {
         return false;
-    } */
+    }
+    // XXX RemoveFromField should be perform in OnBeforeMove
     return dealer.Perform(*dealer.GetOperationFactory().RemoveFromField(row, col));
 }
 

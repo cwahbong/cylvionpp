@@ -30,8 +30,9 @@ public:
 
     void SetBlaze() override { throw std::logic_error("None"); }
 
+    bool OnBeforeMove(Dealer &, const Actor &) const override { throw std::logic_error("None"); }
+
 private:
-    bool OnBeforeMove(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
     bool OnUseWhenReveal(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
     bool OnUseWhenDefend(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { throw std::logic_error("None"); }
 };
@@ -53,7 +54,7 @@ public:
 
     void SetBlaze() override {/* Empty. */}
 
-    bool OnBeforeMove(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { return true; }
+    bool OnBeforeMove(Dealer &, const Actor &) const override { return true; }
     bool OnUseWhenReveal(Dealer & content, const Actor & actor, std::unique_ptr<Card> &&) override;
     bool OnUseWhenDefend(Dealer & content, const Actor & actor, std::unique_ptr<Card> &&) override;
 
@@ -264,7 +265,7 @@ public:
 
     void SetBlaze() override { _enhanced = true; }
 
-    bool OnBeforeMove(Dealer &, const Actor &, std::unique_ptr<Card> &&) override { return true; }
+    bool OnBeforeMove(Dealer &, const Actor &) const override { return true; }
 
 private:
     bool _enhanced;
@@ -283,11 +284,11 @@ class Support: public Ravage {
 class Blaze: public Support {
     unsigned GetPriority() const override { return 2; }
 
-    bool OnBeforeMove(Dealer &, const Actor &, std::unique_ptr<Card> &&) override;
+    bool OnBeforeMove(Dealer &, const Actor &) const override;
 };
 
 bool
-Blaze::OnBeforeMove(Dealer & dealer, const Actor &, std::unique_ptr<Card> && self)
+Blaze::OnBeforeMove(Dealer & dealer, const Actor &) const
 {
     const auto & field = dealer.GetContent().GetField();
     for (size_t row = 0; row < Field::row; ++row) {
@@ -301,14 +302,13 @@ Blaze::OnBeforeMove(Dealer & dealer, const Actor &, std::unique_ptr<Card> && sel
 class Simoon: public Support {
     unsigned GetPriority() const override { return 3; }
 
-    bool OnBeforeMove(Dealer &, const Actor &, std::unique_ptr<Card> &&) override;
+    bool OnBeforeMove(Dealer &, const Actor &) const override;
 };
 
 bool
-Simoon::OnBeforeMove(Dealer & dealer, const Actor &, std::unique_ptr<Card> && self)
+Simoon::OnBeforeMove(Dealer & dealer, const Actor &) const
 {
     MoveLeftAllElementals(dealer);
-    self.reset(); // put to discarded elemental instead
     return false;
 }
 

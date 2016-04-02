@@ -7,14 +7,7 @@
 namespace cylvionpp {
 namespace core {
 
-Card::~Card()
-{/* Empty. */}
-
-bool
-Card::OnBeforeMove(std::unique_ptr<Card> && card, Dealer & dealer, const Actor & actor)
-{
-    return card->OnBeforeMove(dealer, actor, std::move(card));
-}
+Card::~Card() = default;
 
 bool
 Card::OnUseWhenReveal(std::unique_ptr<Card> && card, Dealer & dealer, const Actor & actor)
