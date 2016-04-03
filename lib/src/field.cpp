@@ -17,14 +17,14 @@ public:
 
     bool Empty() const override;
 
-    const Card & Peek(size_t row, size_t col) const override;
-    Card & Peek(size_t row, size_t col) override;
-    bool Put(size_t row, size_t col, std::unique_ptr<Card> &&) override;
-    bool Move(size_t row, size_t col, size_t to_row, size_t toCol) override;
-    std::unique_ptr<Card> Remove(size_t row, size_t col) override;
+    const Card & Peek(const Location & location) const override;
+    Card & Peek(const Location & location) override;
+    bool Put(const Location & location, std::unique_ptr<Card> &&) override;
+    bool Move(const Location & from, const Location & to) override;
+    std::unique_ptr<Card> Remove(const Location & location) override;
 
-    const Stack & GetRavageStack(size_t row) const override;
-    Stack & GetRavageStack(size_t row) override;
+    const Stack & GetRavageStack(Index row) const override;
+    Stack & GetRavageStack(Index row) override;
 
 private:
     using Row = std::array<std::unique_ptr<Card>, 5>;
@@ -58,56 +58,56 @@ FieldImpl::Empty() const
 }
 
 const Card &
-FieldImpl::Peek(size_t row, size_t col) const
+FieldImpl::Peek(const Location & location) const
 {
-    const auto & peeked = c[row][col];
+    const auto & peeked = c[location.row][location.col];
     return peeked ? *peeked : *e;
 }
 
 Card &
-FieldImpl::Peek(size_t row, size_t col)
+FieldImpl::Peek(const Location & location)
 {
-    return const_cast<Card &>(static_cast<const FieldImpl *>(this)->Peek(row, col));
+    return const_cast<Card &>(static_cast<const FieldImpl *>(this)->Peek(location));
 }
 
 bool
-FieldImpl::Put(size_t row, size_t col, std::unique_ptr<Card> && card)
+FieldImpl::Put(const Location & location, std::unique_ptr<Card> && card)
 {
-    if (c[row][col].get()) {
+    if (c[location.row][location.col].get()) {
         return false;
     }
-    c[row][col] = std::move(card);
+    c[location.row][location.col] = std::move(card);
     return true;
 }
 
 bool
-FieldImpl::Move(size_t row, size_t col, size_t toRow, size_t toCol)
+FieldImpl::Move(const Location & from, const Location & to)
 {
-    if (!c[row][col].get() || c[toRow][toCol].get()) {
+    if (!c[from.row][from.col].get() || c[to.row][to.col].get()) {
         return false;
     }
-    c[toRow][toCol] = std::move(c[row][col]);
+    c[to.row][to.col] = std::move(c[from.row][from.col]);
     return true;
 }
 
 std::unique_ptr<Card>
-FieldImpl::Remove(size_t row, size_t col)
+FieldImpl::Remove(const Location & location)
 {
-    if (!c[row][col]) {
+    if (!c[location.row][location.col]) {
         throw std::logic_error("Remove null card.");
     }
-    return std::move(c[row][col]);
+    return std::move(c[location.row][location.col]);
 }
 
 const Stack &
-FieldImpl::GetRavageStack(size_t row) const
+FieldImpl::GetRavageStack(Index row) const
 {
     return *s[row];
 }
 
 
 Stack &
-FieldImpl::GetRavageStack(size_t row)
+FieldImpl::GetRavageStack(Index row)
 {
     return const_cast<Stack &>(static_cast<const FieldImpl *>(this)->GetRavageStack(row));
 }
@@ -124,27 +124,26 @@ Field::New()
 }
 
 void
-MoveElemental(Field & field, size_t fromRow, size_t fromCol,
-                     size_t toRow, size_t toCol)
+MoveElemental(Field & field, const Location & from, const Location & to)
 {
-    const auto & movingCard = field.Peek(fromRow, fromCol);
+    const auto & movingCard = field.Peek(from);
     if (!movingCard.IsRavage()) {
         throw std::logic_error("should be an elemental");
     }
     bool elementalAlive = true;
-    const auto & destCard = field.Peek(toRow, toCol);
+    const auto & destCard = field.Peek(to);
     if (destCard.IsCylvan()) {
         if (movingCard.GetStrength() <= destCard.GetStrength()) {
             elementalAlive = false;
         }
         if (movingCard.GetStrength() >= destCard.GetStrength()) {
-            field.Remove(toRow, toCol);
+            field.Remove(to);
         }
     }
     if (elementalAlive) {
-        field.Move(fromRow, fromCol, toRow, toCol);
+        field.Move(from, to);
     } else {
-        field.Remove(fromRow, fromCol);
+        field.Remove(from);
     }
 }
 

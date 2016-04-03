@@ -58,9 +58,9 @@ bool
 GameImpl::FieldHasRavage()
 {
     const auto & field = _dealer->GetContent().GetField();
-    for (size_t r = 0; r < Field::row; ++r) {
-        for (size_t c = 0; c < Field::col; ++c) {
-            const auto & card = field.Peek(r, c);
+    for (Index r = 0; r < Field::row; ++r) {
+        for (Index c = 0; c < Field::col; ++c) {
+            const auto & card = field.Peek({r, c});
             if (card.IsRavage()) {
                 return true;
             }
@@ -73,13 +73,13 @@ bool
 GameImpl::ResolveSupports(unsigned order)
 {
     const auto & field = _dealer->GetContent().GetField();
-    const size_t col = Field::col - 1;
-    for (size_t row = 0; row < Field::row; ++row) {
-        const auto & peeked = field.Peek(row, col);
+    const auto col = Field::col - 1;
+    for (Index row = 0; row < Field::row; ++row) {
+        const auto & peeked = field.Peek({row, col});
         if (peeked.IsNone() || peeked.GetPriority() != order) {
             continue;
         }
-        if (!ResolveSupport(*_dealer, *_actor, row, col)) {
+        if (!ResolveSupport(*_dealer, *_actor, {row, col})) {
             return false;
         }
     }
@@ -89,7 +89,7 @@ GameImpl::ResolveSupports(unsigned order)
 bool
 GameImpl::Reveal()
 {
-    for (size_t row = 0; row < Field::row; ++row) {
+    for (Index row = 0; row < Field::row; ++row) {
         _dealer->Perform(*operation::RevealRavage(row));
     }
     if (!ActRevealActions(*_dealer, *_actor)) {

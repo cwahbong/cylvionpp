@@ -13,16 +13,16 @@ bool
 MoveLeftAllElementals(Dealer & dealer)
 {
     const auto & field = dealer.GetContent().GetField();
-    for (size_t row = 0; row < Field::row; ++row) {
-        for (size_t col = 0; col < Field::col; ++col) {
-            const auto & card = field.Peek(row, col);
+    for (Index row = 0; row < Field::row; ++row) {
+        for (Index col = 0; col < Field::col; ++col) {
+            const auto & card = field.Peek({row, col});
             if (!card.IsRavage()) {
                 continue;
             }
             if (col == 0) {
-                dealer.Perform(*operation::MoveOutElemental(row, col));
+                dealer.Perform(*operation::MoveOutElemental({row, col}));
             } else {
-                dealer.Perform(*operation::MoveElemental(row, col, row, col - 1));
+                dealer.Perform(*operation::MoveElemental({row, col}, {row, col - 1}));
             }
         }
     }
@@ -37,10 +37,10 @@ DiscardChooseFromHand(Dealer & dealer, const Actor & actor)
 }
 
 bool
-ResolveSupport(Dealer & dealer, const Actor & actor, size_t row, size_t col)
+ResolveSupport(Dealer & dealer, const Actor & actor, const Location & location)
 {
-    const auto & card = dealer.GetContent().GetField().Peek(row, col);
-    return card.OnBeforeMove(dealer, actor, row, col);
+    const auto & card = dealer.GetContent().GetField().Peek(location);
+    return card.OnBeforeMove(dealer, actor, location);
 }
 
 } // namespace cylvionpp

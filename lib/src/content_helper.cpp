@@ -25,7 +25,7 @@ StartingShuffle(Content & content)
 namespace {
 
 bool
-ActActions(Dealer & dealer, std::function<Action ()> getAction, std::function<bool (size_t)> cardOnUse)
+ActActions(Dealer & dealer, std::function<Action ()> getAction, std::function<bool (Index)> cardOnUse)
 {
     const auto & content = dealer.GetContent();
     const auto & hand = content.GetHand();
@@ -60,7 +60,7 @@ ActRevealActions(Dealer & dealer, const Actor & actor)
     auto getAction = [&actor, &dealer]() {
         return actor.RevealAction(dealer.GetContent());
     };
-    auto cardOnUse = [&actor, &dealer](size_t idx) {
+    auto cardOnUse = [&actor, &dealer](Index idx) {
         const auto & card = dealer.GetContent().GetHand().Peek(idx);
         return card->OnUseWhenReveal(dealer, actor, idx);
     };
@@ -73,7 +73,7 @@ ActDefendActions(Dealer & dealer, const Actor & actor)
     auto getAction = [&actor, &dealer]() {
         return actor.DefendAction(dealer.GetContent());
     };
-    auto cardOnUse = [&actor, &dealer](size_t idx) {
+    auto cardOnUse = [&actor, &dealer](Index idx) {
         const auto & card = dealer.GetContent().GetHand().Peek(idx);
         return card->OnUseWhenDefend(dealer, actor, idx);
     };

@@ -12,17 +12,17 @@ namespace {
 
 class RevealRavageOperation: public Operation {
 public:
-    RevealRavageOperation(size_t row);
+    RevealRavageOperation(Index row);
     std::string GetName() const override { return ""; }
     std::string GetDescription() const override { return ""; }
 
     bool Run(Content &) override;
 
 private:
-    size_t _row;
+    Index _row;
 };
 
-RevealRavageOperation::RevealRavageOperation(size_t row):
+RevealRavageOperation::RevealRavageOperation(Index row):
     _row(row)
 {/* Empty. */}
 
@@ -30,14 +30,14 @@ bool
 RevealRavageOperation::Run(Content & content)
 {
     auto & field = content.GetField();
-    field.Put(_row, Field::col - 1, field.GetRavageStack(_row).Pop());
+    field.Put({_row, Field::col - 1}, field.GetRavageStack(_row).Pop());
     return true;
 }
 
 } // namespace
 
 std::unique_ptr<Operation>
-RevealRavage(size_t row)
+RevealRavage(Index row)
 {
     return std::make_unique<RevealRavageOperation>(row);
 }

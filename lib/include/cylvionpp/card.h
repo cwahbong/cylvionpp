@@ -2,6 +2,7 @@
 #define CYLVIONPP_CARD_H
 
 #include "cylvionpp_export.h"
+#include "types.h"
 
 #include <memory>
 
@@ -26,9 +27,9 @@ public:
 
     virtual void SetBlaze() = 0;
 
-    virtual bool OnBeforeMove(Dealer & dealer, const Actor & actor, size_t row, size_t col) const = 0;
-    virtual bool OnUseWhenReveal(Dealer & dealer, const Actor & actor, size_t idx) const = 0;
-    virtual bool OnUseWhenDefend(Dealer & dealer, const Actor & actor, size_t idx) const = 0;
+    virtual bool OnBeforeMove(Dealer & dealer, const Actor & actor, const Location & location) const = 0;
+    virtual bool OnUseWhenReveal(Dealer & dealer, const Actor & actor, Index index) const = 0;
+    virtual bool OnUseWhenDefend(Dealer & dealer, const Actor & actor, Index index) const = 0;
 };
 
 } // namespace cylvionpp

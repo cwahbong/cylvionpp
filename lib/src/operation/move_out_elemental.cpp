@@ -11,7 +11,7 @@ namespace {
 
 class MoveOutElementalOperation: public Operation {
 public:
-    MoveOutElementalOperation(size_t row, size_t col);
+    MoveOutElementalOperation(const Location & location);
 
     std::string GetName() const override { return ""; }
     std::string GetDescription() const override { return ""; }
@@ -19,20 +19,18 @@ public:
     bool Run(Content &) override;
 
 private:
-    size_t _row;
-    size_t _col;
+    Location _location;
 };
 
-MoveOutElementalOperation::MoveOutElementalOperation(size_t row, size_t col):
-    _row(row),
-    _col(col)
+MoveOutElementalOperation::MoveOutElementalOperation(const Location & location):
+    _location(location)
 {/* Empty. */}
 
 bool
 MoveOutElementalOperation::Run(Content & content)
 {
     auto & field = content.GetField();
-    const auto & card = field.Peek(_row, _col);
+    const auto & card = field.Peek(_location);
     if (!card.IsRavage()) {
         throw std::logic_error("not an elemental");
     }
@@ -40,16 +38,16 @@ MoveOutElementalOperation::Run(Content & content)
         return false;
     }
     content.DecreaseEdge(card.GetStrength());
-    field.Remove(_row, _col);
+    field.Remove(_location);
     return true;
 }
 
 } // namespace
 
 std::unique_ptr<Operation>
-MoveOutElemental(size_t row, size_t col)
+MoveOutElemental(const Location & location)
 {
-    return std::make_unique<MoveOutElementalOperation>(row, col);
+    return std::make_unique<MoveOutElementalOperation>(location);
 }
 
 } // namespace operation

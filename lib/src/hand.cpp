@@ -12,9 +12,9 @@ class HandImpl: public Hand {
 public:
     size_t Size() const override;
 
-    const std::unique_ptr<Card> & Peek(size_t idx) const override;
+    const std::unique_ptr<Card> & Peek(Index idx) const override;
     void Add(std::unique_ptr<Card> && card) override;
-    std::unique_ptr<Card> Remove(size_t idx) override;
+    std::unique_ptr<Card> Remove(Index idx) override;
 
 private:
     std::vector<std::unique_ptr<Card>> c;
@@ -27,7 +27,7 @@ HandImpl::Size() const
 }
 
 const std::unique_ptr<Card> &
-HandImpl::Peek(size_t idx) const
+HandImpl::Peek(Index idx) const
 {
     return c.at(idx);
 }
@@ -39,7 +39,7 @@ HandImpl::Add(std::unique_ptr<Card> && card)
 }
 
 std::unique_ptr<Card>
-HandImpl::Remove(size_t idx)
+HandImpl::Remove(Index idx)
 {
     std::swap(c.at(idx), c.back());
     std::unique_ptr<Card> card = std::move(c.back());

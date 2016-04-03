@@ -29,9 +29,9 @@ public:
 
     void SetBlaze() override { throw std::logic_error("None"); }
 
-    bool OnBeforeMove(Dealer &, const Actor &, size_t, size_t) const override { throw std::logic_error("None"); }
-    bool OnUseWhenReveal(Dealer &, const Actor &, size_t) const override { throw std::logic_error("None"); }
-    bool OnUseWhenDefend(Dealer &, const Actor &, size_t) const override { throw std::logic_error("None"); }
+    bool OnBeforeMove(Dealer &, const Actor &, const Location &) const override { throw std::logic_error("None"); }
+    bool OnUseWhenReveal(Dealer &, const Actor &, Index) const override { throw std::logic_error("None"); }
+    bool OnUseWhenDefend(Dealer &, const Actor &, Index) const override { throw std::logic_error("None"); }
 };
 
 class NotNone: public Card {
@@ -51,21 +51,21 @@ public:
 
     void SetBlaze() override {/* Empty. */}
 
-    bool OnBeforeMove(Dealer &, const Actor &, size_t, size_t) const override { return true; }
-    bool OnUseWhenReveal(Dealer & content, const Actor & actor, size_t) const override;
-    bool OnUseWhenDefend(Dealer & content, const Actor & actor, size_t) const override;
+    bool OnBeforeMove(Dealer &, const Actor &, const Location &) const override { return true; }
+    bool OnUseWhenReveal(Dealer & content, const Actor & actor, Index) const override;
+    bool OnUseWhenDefend(Dealer & content, const Actor & actor, Index) const override;
 
 private:
     virtual bool CanUseWhenReveal() const = 0;
     virtual bool CanUseWhenDefend() const = 0;
-    bool OnUse(Dealer & dealer, const Actor & actor, size_t) const;
-    virtual bool OnUseEffect(Dealer & dealer, const Actor & actor, size_t) const = 0;
+    bool OnUse(Dealer & dealer, const Actor & actor, Index) const;
+    virtual bool OnUseEffect(Dealer & dealer, const Actor & actor, Index) const = 0;
 
     unsigned _cost;
 };
 
 bool
-Cylvan::OnUse(Dealer & dealer, const Actor & actor, size_t idx) const
+Cylvan::OnUse(Dealer & dealer, const Actor & actor, Index idx) const
 {
     const auto & content = dealer.GetContent();
     if (content.GetMana() < GetCost()) {
@@ -80,7 +80,7 @@ Cylvan::OnUse(Dealer & dealer, const Actor & actor, size_t idx) const
 }
 
 bool
-Cylvan::OnUseWhenReveal(Dealer & dealer, const Actor & actor, size_t idx) const
+Cylvan::OnUseWhenReveal(Dealer & dealer, const Actor & actor, Index idx) const
 {
     if (!CanUseWhenReveal()) {
         return false;
@@ -89,7 +89,7 @@ Cylvan::OnUseWhenReveal(Dealer & dealer, const Actor & actor, size_t idx) const
 }
 
 bool
-Cylvan::OnUseWhenDefend(Dealer & dealer, const Actor & actor, size_t idx) const
+Cylvan::OnUseWhenDefend(Dealer & dealer, const Actor & actor, Index idx) const
 {
     if (!CanUseWhenDefend()) {
         return false;
@@ -104,15 +104,16 @@ public:
 private:
     bool CanUseWhenReveal() const override { return false; }
     bool CanUseWhenDefend() const override { return true; }
-    bool OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const override;
+    bool OnUseEffect(Dealer & dealer, const Actor & actor, Index idx) const override;
 };
 
 bool
-OnFieldCylvan::OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const
+OnFieldCylvan::OnUseEffect(Dealer & dealer, const Actor & actor, Index idx) const
 {
-    size_t row = actor.AnswerIndex("put field row");
-    size_t col = actor.AnswerIndex("put field col");
-    return dealer.Perform(*operation::PutCylvan(idx, row, col));
+    auto row = actor.AnswerIndex("put field row");
+    auto col = actor.AnswerIndex("put field col");
+    // TODO check before put
+    return dealer.Perform(*operation::PutCylvan(idx, {row, col}));
 }
 
 class Fountain: public OnFieldCylvan {
@@ -159,18 +160,18 @@ public:
     Whale(): DefenseAnimal(0) {/* Empty. */}
 
 private:
-    bool OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const override;
+    bool OnUseEffect(Dealer & dealer, const Actor & actor, Index) const override;
 };
 
 bool
-Whale::OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const
+Whale::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
 {
     // TODO error handling
-    size_t fromRow = actor.AnswerIndex("elem from row");
-    size_t fromCol = actor.AnswerIndex("elem from col");
-    size_t toRow = actor.AnswerIndex("elem to row");
-    size_t toCol = actor.AnswerIndex("elem to col");
-    return dealer.Perform(*operation::MoveElemental(fromRow, fromCol, toRow, toCol));
+    const auto fromRow = actor.AnswerIndex("elem from row");
+    const auto fromCol = actor.AnswerIndex("elem from col");
+    const auto toRow = actor.AnswerIndex("elem to row");
+    const auto toCol = actor.AnswerIndex("elem to col");
+    return dealer.Perform(*operation::MoveElemental({fromRow, fromCol}, {toRow, toCol}));
 }
 
 class Elephant: public DefenseAnimal {
@@ -178,19 +179,19 @@ public:
     Elephant(): DefenseAnimal(1) {/* Empty. */}
 
 private:
-    bool OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const override;
+    bool OnUseEffect(Dealer & dealer, const Actor & actor, Index) const override;
 };
 
 bool
-Elephant::OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const
+Elephant::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
 {
-    size_t row = actor.AnswerIndex("elem row");
-    size_t col = actor.AnswerIndex("elem col");
+    const auto row = actor.AnswerIndex("elem row");
+    const auto col = actor.AnswerIndex("elem col");
     const auto & field = dealer.GetContent().GetField();
-    if (!field.Peek(row, col).IsNone()) {
+    if (!field.Peek({row, col}).IsNone()) {
         return false;
     }
-    return dealer.Perform(*operation::RemoveFromField(row, col));
+    return dealer.Perform(*operation::RemoveFromField({row, col}));
 }
 
 class Hedgehogs: public Animal {
@@ -200,19 +201,19 @@ public:
 private:
     bool CanUseWhenReveal() const override { return true; }
     bool CanUseWhenDefend() const override { return false; }
-    bool OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const override;
+    bool OnUseEffect(Dealer & dealer, const Actor & actor, Index) const override;
 };
 
 bool
-Hedgehogs::OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const
+Hedgehogs::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
 {
-    const size_t row = actor.AnswerIndex("elem row");
-    const size_t col = Field::col - 1;
+    const auto row = actor.AnswerIndex("elem row");
+    const auto col = Field::col - 1;
     const auto & field = dealer.GetContent().GetField();
-    if (!field.Peek(row, col).IsRavage()) {
+    if (!field.Peek({row, col}).IsRavage()) {
         return false;
     }
-    return dealer.Perform(*operation::RemoveFromField(row, col));
+    return dealer.Perform(*operation::RemoveFromField({row, col}));
 }
 
 class Owl: public DefenseAnimal {
@@ -220,11 +221,11 @@ public:
     Owl(): DefenseAnimal(1) {/* Empty. */}
 
 private:
-    bool OnUseEffect(Dealer & dealer, const Actor & actor, size_t idx) const override;
+    bool OnUseEffect(Dealer & dealer, const Actor &, Index) const override;
 };
 
 bool
-Owl::OnUseEffect(Dealer & dealer, const Actor &, size_t idx) const
+Owl::OnUseEffect(Dealer & dealer, const Actor &, Index) const
 {
     return dealer.Perform(*operation::PlayerDraw(3));
 }
@@ -237,8 +238,8 @@ public:
     bool IsCylvan() const override { return false; }
     bool IsRavage() const override { return true; }
 
-    bool OnUseWhenReveal(Dealer &, const Actor &, size_t) const override { throw std::logic_error("Ravage is not usable"); }
-    bool OnUseWhenDefend(Dealer &, const Actor &, size_t) const override { throw std::logic_error("Ravage is not usable"); }
+    bool OnUseWhenReveal(Dealer &, const Actor &, Index) const override { throw std::logic_error("Ravage is not usable"); }
+    bool OnUseWhenDefend(Dealer &, const Actor &, Index) const override { throw std::logic_error("Ravage is not usable"); }
 };
 
 class Elemental: public Ravage {
@@ -253,7 +254,7 @@ public:
 
     void SetBlaze() override { _enhanced = true; }
 
-    bool OnBeforeMove(Dealer &, const Actor &, size_t, size_t) const override { return true; }
+    bool OnBeforeMove(Dealer &, const Actor &, const Location &) const override { return true; }
 
 private:
     bool _enhanced;
@@ -268,31 +269,31 @@ class Support: public Ravage {
 
     void SetBlaze() override {/* Empty. */}
 
-    bool OnBeforeMove(Dealer & dealer, const Actor & actor, size_t row, size_t col) const override final;
+    bool OnBeforeMove(Dealer & dealer, const Actor & actor, const Location & location) const override final;
 
 private:
-    virtual bool OnBeforeMoveEffect(Dealer & dealer, const Actor & actor, size_t row, size_t col) const = 0;
+    virtual bool OnBeforeMoveEffect(Dealer & dealer, const Actor & actor, const Location & location) const = 0;
 };
 
 bool
-Support::OnBeforeMove(Dealer & dealer, const Actor & actor, size_t row, size_t col) const
+Support::OnBeforeMove(Dealer & dealer, const Actor & actor, const Location & location) const
 {
-    if (!OnBeforeMoveEffect(dealer, actor, row, col)) {
+    if (!OnBeforeMoveEffect(dealer, actor, location)) {
         return false;
     }
-    return dealer.Perform(*operation::RemoveFromField(row, col));
+    return dealer.Perform(*operation::RemoveFromField(location));
 }
 
 class Blaze: public Support {
     unsigned GetPriority() const override { return 2; }
 
-    bool OnBeforeMoveEffect(Dealer &, const Actor &, size_t, size_t) const override;
+    bool OnBeforeMoveEffect(Dealer &, const Actor &, const Location &) const override;
 };
 
 bool
-Blaze::OnBeforeMoveEffect(Dealer & dealer, const Actor &, size_t, size_t) const
+Blaze::OnBeforeMoveEffect(Dealer &, const Actor &, const Location &) const
 {
-    const auto & field = dealer.GetContent().GetField();
+    // const auto & field = dealer.GetContent().GetField();
     for (size_t row = 0; row < Field::row; ++row) {
         for (size_t col = 0; col < Field::col; ++col) {
             // XXX field.Peek(row, col).SetBlaze();
@@ -304,11 +305,11 @@ Blaze::OnBeforeMoveEffect(Dealer & dealer, const Actor &, size_t, size_t) const
 class Simoon: public Support {
     unsigned GetPriority() const override { return 3; }
 
-    bool OnBeforeMoveEffect(Dealer &, const Actor &, size_t, size_t) const override;
+    bool OnBeforeMoveEffect(Dealer &, const Actor &, const Location &) const override;
 };
 
 bool
-Simoon::OnBeforeMoveEffect(Dealer & dealer, const Actor &, size_t, size_t) const
+Simoon::OnBeforeMoveEffect(Dealer & dealer, const Actor &, const Location &) const
 {
     MoveLeftAllElementals(dealer);
     return false;

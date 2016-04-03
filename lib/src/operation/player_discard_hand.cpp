@@ -12,7 +12,7 @@ namespace {
 
 class PlayerDiscardHandOperation: public Operation {
 public:
-    PlayerDiscardHandOperation(size_t idx);
+    PlayerDiscardHandOperation(Index idx);
 
     std::string GetName() const override {return ""; }
     std::string GetDescription() const override { return ""; }
@@ -23,7 +23,7 @@ private:
     size_t _idx;
 };
 
-PlayerDiscardHandOperation::PlayerDiscardHandOperation(size_t idx):
+PlayerDiscardHandOperation::PlayerDiscardHandOperation(Index idx):
     _idx(idx)
 {/* Empty. */}
 
@@ -42,7 +42,7 @@ PlayerDiscardHandOperation::Run(Content & content)
 } // namespace operation
 
 std::unique_ptr<Operation>
-PlayerDiscardHand(size_t idx)
+PlayerDiscardHand(Index idx)
 {
     return std::make_unique<PlayerDiscardHandOperation>(idx);
 }

@@ -2,6 +2,7 @@
 #define CYLVIONPP_FIELD_H
 
 #include "cylvionpp_export.h"
+#include "types.h"
 
 #include <memory>
 
@@ -16,22 +17,22 @@ public:
 
     virtual bool Empty() const = 0;
 
-    virtual const Card & Peek(size_t row, size_t col) const = 0;
-    virtual Card & Peek(size_t row, size_t col) = 0;
-    virtual bool Put(size_t row, size_t col, std::unique_ptr<Card> &&) = 0;
-    virtual bool Move(size_t row, size_t col, size_t to_row, size_t toCol) = 0;
-    virtual std::unique_ptr<Card> Remove(size_t row, size_t col) = 0;
+    virtual const Card & Peek(const Location & location) const = 0;
+    virtual Card & Peek(const Location & location) = 0;
+    virtual bool Put(const Location & location, std::unique_ptr<Card> &&) = 0;
+    virtual bool Move(const Location & from, const Location & to) = 0;
+    virtual std::unique_ptr<Card> Remove(const Location & location) = 0;
 
-    virtual const Stack & GetRavageStack(size_t row) const = 0;
-    virtual Stack & GetRavageStack(size_t row) = 0;
+    virtual const Stack & GetRavageStack(Index row) const = 0;
+    virtual Stack & GetRavageStack(Index row) = 0;
 
-    const static size_t row = 4;
-    const static size_t col = 5;
+    const static Index row = 4;
+    const static Index col = 5;
     static std::unique_ptr<Field> New();
 
 };
 
-void CYLVIONPP_EXPORT MoveElemental(Field & field, size_t fromRow, size_t fromCol, size_t toRow, size_t toCol);
+void CYLVIONPP_EXPORT MoveElemental(Field & field, const Location & from, const Location & to);
 
 } // namespace cylvionpp
 
