@@ -45,7 +45,7 @@ GameImpl::GameImpl(
         std::unique_ptr<Content> content):
     _actor(actor),
     _observer(observer),
-    _dealer(Dealer::New(std::move(content)))
+    _dealer(Dealer::New(std::move(content), observer))
 {/* Empty.*/}
 
 bool

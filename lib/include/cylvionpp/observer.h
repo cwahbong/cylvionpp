@@ -7,12 +7,14 @@
 
 namespace cylvionpp {
 
-class CYLVIONPP_EXPORT EventReceiver {
-public:
-    virtual ~EventReceiver() = 0;
+class Operation;
 
-    virtual void BeforeEvent(const Event &) = 0;
-    virtual void AfterEvent(const Event &) = 0;
+class CYLVIONPP_EXPORT Observer {
+public:
+    virtual ~Observer() = 0;
+
+    virtual void BeforeOperation(const Operation &) = 0;
+    virtual void AfterOperation(const Operation &) = 0;
 };
 
 } // namespace cylvionpp

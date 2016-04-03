@@ -1,6 +1,7 @@
 #include "cylvionpp/dealer.h"
 
 #include "cylvionpp/content.h"
+#include "cylvionpp/observer.h"
 #include "cylvionpp/operation.h"
 
 namespace cylvionpp {
@@ -9,7 +10,7 @@ namespace {
 
 class DealerImpl: public Dealer {
 public:
-    DealerImpl(std::unique_ptr<Content>);
+    DealerImpl(std::unique_ptr<Content>, std::shared_ptr<Observer> observer);
 
     const Content & GetContent() const override;
 
@@ -17,10 +18,12 @@ public:
 
 private:
     std::unique_ptr<Content> _content;
+    std::shared_ptr<Observer> _observer;
 };
 
-DealerImpl::DealerImpl(std::unique_ptr<Content> content):
-    _content(std::move(content))
+DealerImpl::DealerImpl(std::unique_ptr<Content> content, std::shared_ptr<Observer> observer):
+    _content(std::move(content)),
+    _observer(observer)
 {/* Empty. */}
 
 const Content &
@@ -32,10 +35,9 @@ DealerImpl::GetContent() const
 bool
 DealerImpl::Perform(Operation & operation)
 {
-    // Before
+    _observer->BeforeOperation(operation);
     operation.Run(*_content);
-    // After
-    // TODO return
+    _observer->AfterOperation(operation);
     return true;
 }
 
@@ -44,9 +46,9 @@ DealerImpl::Perform(Operation & operation)
 Dealer::~Dealer() = default;
 
 std::unique_ptr<Dealer>
-Dealer::New(std::unique_ptr<Content> content)
+Dealer::New(std::unique_ptr<Content> content, std::shared_ptr<Observer> observer)
 {
-    return std::make_unique<DealerImpl>(std::move(content));
+    return std::make_unique<DealerImpl>(std::move(content), observer);
 }
 
 } // namespace cylvionpp

@@ -8,6 +8,7 @@
 namespace cylvionpp {
 
 class Content;
+class Observer;
 class Operation;
 
 class CYLVIONPP_EXPORT Dealer {
@@ -16,10 +17,9 @@ public:
 
     virtual const Content & GetContent() const = 0;
 
-    // TODO add observer for dealer
     virtual bool Perform(Operation &) = 0;
 
-    static std::unique_ptr<Dealer> New(std::unique_ptr<Content> content);
+    static std::unique_ptr<Dealer> New(std::unique_ptr<Content> content, std::shared_ptr<Observer> observer);
 };
 
 } // namespace cylvionpp
