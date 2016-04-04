@@ -5,6 +5,8 @@
 #include "cylvionpp/field.h"
 #include "cylvionpp/stack.h"
 
+#include <sstream>
+
 namespace cylvionpp {
 namespace operation {
 
@@ -13,8 +15,8 @@ namespace {
 class RevealRavageOperation: public Operation {
 public:
     RevealRavageOperation(Index row);
-    std::string GetName() const override { return ""; }
-    std::string GetDescription() const override { return ""; }
+    std::string GetName() const override;
+    std::string GetDescription() const override;
 
     bool Run(Content &) override;
 
@@ -25,6 +27,20 @@ private:
 RevealRavageOperation::RevealRavageOperation(Index row):
     _row(row)
 {/* Empty. */}
+
+std::string
+RevealRavageOperation::GetName() const
+{
+    return "reveal ravage";
+}
+
+std::string
+RevealRavageOperation::GetDescription() const
+{
+    std::ostringstream oss;
+    oss << _row << "-th row ravage revealed";
+    return oss.str();
+}
 
 bool
 RevealRavageOperation::Run(Content & content)

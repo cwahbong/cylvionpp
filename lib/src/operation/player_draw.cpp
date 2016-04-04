@@ -5,6 +5,8 @@
 #include "cylvionpp/hand.h"
 #include "cylvionpp/stack.h"
 
+#include <sstream>
+
 namespace cylvionpp {
 namespace operation {
 
@@ -14,8 +16,8 @@ class PlayerDrawOperation: public Operation {
 public:
     PlayerDrawOperation(size_t count);
 
-    std::string GetName() const override {return ""; }
-    std::string GetDescription() const override { return ""; }
+    std::string GetName() const override;
+    std::string GetDescription() const override;
 
     bool Run(Content &) override;
 
@@ -26,6 +28,24 @@ private:
 PlayerDrawOperation::PlayerDrawOperation(size_t count):
     _count(count)
 {/* Empty. */}
+
+std::string
+PlayerDrawOperation::GetName() const
+{
+    return "player draw";
+}
+
+std::string
+PlayerDrawOperation::GetDescription() const
+{
+    std::ostringstream oss;
+    if (_count == 1) {
+        oss << _count << " card is drawn by player";
+    } else {
+        oss << _count << " cards are drawn by player";
+    }
+    return oss.str();
+}
 
 bool
 PlayerDrawOperation::Run(Content & content)

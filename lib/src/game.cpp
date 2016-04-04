@@ -34,6 +34,8 @@ private:
     bool Defend();
     bool LastMove();
 
+    bool CheckWin();
+
     std::shared_ptr<Actor> _actor;
     std::shared_ptr<Observer> _observer;
     std::unique_ptr<Dealer> _dealer;
@@ -90,13 +92,17 @@ bool
 GameImpl::Reveal()
 {
     for (Index row = 0; row < Field::row; ++row) {
-        _dealer->Perform(*operation::RevealRavage(row));
+        if (!_dealer->Perform(*operation::RevealRavage(row))) {
+            return false;
+        }
     }
     if (!ActRevealActions(*_dealer, *_actor)) {
         return false;
     }
     for (unsigned i = 0; i < 4; ++i) {
-        ResolveSupports(i);
+        if (!ResolveSupports(i)) {
+            return false;
+        }
     }
     return true;
 }
@@ -104,8 +110,7 @@ GameImpl::Reveal()
 bool
 GameImpl::Move()
 {
-    MoveLeftAllElementals(*_dealer);
-    return true;
+    return MoveLeftAllElementals(*_dealer);
 }
 
 bool
@@ -122,7 +127,9 @@ GameImpl::Defend()
     }
     const auto & hand = _dealer->GetContent().GetHand();
     while (hand.Size() > 10) {
-        DiscardChooseFromHand(*_dealer, *_actor);
+        if (!DiscardChooseFromHand(*_dealer, *_actor)) {
+            return false;
+        }
     }
     return true;
 }
@@ -139,6 +146,12 @@ GameImpl::LastMove()
 }
 
 bool
+GameImpl::CheckWin()
+{
+    return _dealer->GetContent().GetEdge() == 12;
+}
+
+bool
 GameImpl::Run()
 {
     while (RavageStackHasRavage()) {
@@ -149,13 +162,12 @@ GameImpl::Run()
     if (!LastMove()) {
         return false;
     }
-    return _dealer->GetContent().GetEdge() == 12;
+    return CheckWin();
 }
 
 } // namespace
 
-Game::~Game()
-{/* Empty. */}
+Game::~Game() = default;
 
 std::unique_ptr<Game>
 Game::New(

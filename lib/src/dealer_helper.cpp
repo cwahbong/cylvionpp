@@ -20,9 +20,13 @@ MoveLeftAllElementals(Dealer & dealer)
                 continue;
             }
             if (col == 0) {
-                dealer.Perform(*operation::MoveOutElemental({row, col}));
+                if (!dealer.Perform(*operation::MoveOutElemental({row, col}))) {
+                    return false;
+                }
             } else {
-                dealer.Perform(*operation::MoveElemental({row, col}, {row, col - 1}));
+                if (!dealer.Perform(*operation::MoveElemental({row, col}, {row, col - 1}))) {
+                    return false;
+                }
             }
         }
     }

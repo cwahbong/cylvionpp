@@ -35,7 +35,7 @@ ActActions(Dealer & dealer, std::function<Action ()> getAction, std::function<bo
         if (action.end) {
             break;
         }
-        size_t idx;
+        Index idx;
         std::stringstream ss(action.additional["idx"]);
         ss >> idx;
         // TODO handle out or range
