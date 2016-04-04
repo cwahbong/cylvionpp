@@ -28,6 +28,8 @@ private:
     bool FieldHasRavage();
     bool ResolveSupports(unsigned order);
 
+    bool StartingDraw();
+
     bool Reveal();
     bool Move();
     bool Draw();
@@ -86,6 +88,12 @@ GameImpl::ResolveSupports(unsigned order)
         }
     }
     return true;
+}
+
+bool
+GameImpl::StartingDraw()
+{
+    return _dealer->Perform(*operation::PlayerDraw(8));
 }
 
 bool
@@ -154,6 +162,9 @@ GameImpl::CheckWin()
 bool
 GameImpl::Run()
 {
+    if (!StartingDraw()) {
+        return false;
+    }
     while (RavageStackHasRavage()) {
         if (!Reveal() || !Move() || !Draw() || !Defend()) {
             return false;

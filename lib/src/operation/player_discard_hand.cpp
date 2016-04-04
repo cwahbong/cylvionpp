@@ -49,6 +49,7 @@ PlayerDiscardHandOperation::Run(Content & content)
     auto & hand = content.GetHand();
     try {
         content.GetDiscarded().Push(hand.Remove(_idx));
+        content.SetMana(content.GetMana() + 1);
     } catch (const std::out_of_range &) {
         return false;
     }

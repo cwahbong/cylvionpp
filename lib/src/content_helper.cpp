@@ -9,6 +9,7 @@
 #include "cylvionpp/dealer.h"
 #include "cylvionpp/field.h"
 #include "cylvionpp/hand.h"
+#include "cylvionpp/operation.h"
 #include "cylvionpp/stack.h"
 
 namespace cylvionpp {
@@ -27,9 +28,6 @@ namespace {
 bool
 ActActions(Dealer & dealer, std::function<Action ()> getAction, std::function<bool (Index)> cardOnUse)
 {
-    const auto & content = dealer.GetContent();
-    const auto & hand = content.GetHand();
-    const auto & discarded = content.GetDiscarded();
     while (true) {
         Action action = getAction();
         if (action.end) {
@@ -39,10 +37,10 @@ ActActions(Dealer & dealer, std::function<Action ()> getAction, std::function<bo
         std::stringstream ss(action.additional["idx"]);
         ss >> idx;
         // TODO handle out or range
-        // std::unique_ptr<Card> card = hand.Remove(idx);
         if (action.additional["type"] == "discard") {
-            // discarded.Push(std::move(card));
-            // content.SetMana(content.GetMana() + 1); // XXX
+            if (!dealer.Perform(*operation::PlayerDiscardHand(idx))) {
+                return false;
+            }
         } else if (action.additional["type"] == "use") {
             if (!cardOnUse(idx)) {
                 return false;

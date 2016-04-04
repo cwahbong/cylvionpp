@@ -74,8 +74,7 @@ Cylvan::OnUse(Dealer & dealer, const Actor & actor, Index idx) const
     if (!OnUseEffect(dealer, actor, idx)) {
         return false;
     }
-    // XXX content.SetMana(content.GetMana() - GetCost());
-    // XXX move to discard pile
+    dealer.Perform(*operation::DecreaseMana(GetCost()));
     return true;
 }
 

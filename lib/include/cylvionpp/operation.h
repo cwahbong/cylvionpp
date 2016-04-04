@@ -25,6 +25,7 @@ namespace operation {
 
 CYLVIONPP_EXPORT std::unique_ptr<Operation> PlayerDraw(size_t count);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> PlayerDiscardHand(Index idx);
+CYLVIONPP_EXPORT std::unique_ptr<Operation> DecreaseMana(size_t amount);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> PutCylvan(Index idx, const Location & location);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> RevealRavage(Index row);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> MoveElemental(const Location & from, const Location & to);
