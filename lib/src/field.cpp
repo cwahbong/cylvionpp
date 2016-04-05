@@ -4,7 +4,6 @@
 #include <array>
 
 #include "cylvionpp/card.h"
-#include "cylvionpp/card_factory.h"
 #include "cylvionpp/stack.h"
 
 namespace cylvionpp {
@@ -38,7 +37,7 @@ private:
 FieldImpl::FieldImpl():
     c(),
     s(),
-    e(NewCardFactory()->NewNone())
+    e(card::None())
 {
     for (auto && stack: s) {
         stack = Stack::New();

@@ -32,6 +32,21 @@ public:
     virtual bool OnUseWhenDefend(Dealer & dealer, const Actor & actor, Index index) const = 0;
 };
 
+namespace card {
+
+CYLVIONPP_EXPORT std::unique_ptr<Card> None();
+CYLVIONPP_EXPORT std::unique_ptr<Card> Fountain(unsigned cost, unsigned strength);
+CYLVIONPP_EXPORT std::unique_ptr<Card> Tree(unsigned cost, unsigned vitality);
+CYLVIONPP_EXPORT std::unique_ptr<Card> Whale();
+CYLVIONPP_EXPORT std::unique_ptr<Card> Elephant();
+CYLVIONPP_EXPORT std::unique_ptr<Card> Hedgehogs();
+CYLVIONPP_EXPORT std::unique_ptr<Card> Owl();
+CYLVIONPP_EXPORT std::unique_ptr<Card> Elemental(unsigned strength, unsigned enhancedStrength);
+CYLVIONPP_EXPORT std::unique_ptr<Card> Blaze();
+CYLVIONPP_EXPORT std::unique_ptr<Card> Simoon();
+
+} // namespace card
+
 } // namespace cylvionpp
 
 #endif // CYLVIONPP_CARD_H

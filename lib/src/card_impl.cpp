@@ -1,5 +1,3 @@
-#include "cylvionpp/card_factory.h"
-
 #include "cylvionpp/actor.h"
 #include "cylvionpp/card.h"
 #include "cylvionpp/content.h"
@@ -10,12 +8,11 @@
 #include "cylvionpp/stack.h"
 #include "cylvionpp/operation.h"
 
-
 namespace cylvionpp {
 
 namespace {
 
-class None: public Card {
+class NoneCard: public Card {
 public:
     unsigned GetCost() const override { throw std::logic_error("None"); }
     unsigned GetStrength() const override { throw std::logic_error("None"); }
@@ -34,13 +31,13 @@ public:
     bool OnUseWhenDefend(Dealer &, const Actor &, Index) const override { throw std::logic_error("None"); }
 };
 
-class NotNone: public Card {
+class NotNoneCard: public Card {
     bool IsNone() const override { return false; }
 };
 
-class Cylvan: public NotNone {
+class CylvanCard: public NotNoneCard {
 public:
-    Cylvan(unsigned cost): _cost(cost) {/* Empty. */}
+    CylvanCard(unsigned cost): _cost(cost) {/* Empty. */}
 
     unsigned GetCost() const override { return _cost; }
     unsigned GetPriority() const override { throw std::logic_error("cylvan has no priority"); }
@@ -65,7 +62,7 @@ private:
 };
 
 bool
-Cylvan::OnUse(Dealer & dealer, const Actor & actor, Index idx) const
+CylvanCard::OnUse(Dealer & dealer, const Actor & actor, Index idx) const
 {
     const auto & content = dealer.GetContent();
     if (content.GetMana() < GetCost()) {
@@ -79,7 +76,7 @@ Cylvan::OnUse(Dealer & dealer, const Actor & actor, Index idx) const
 }
 
 bool
-Cylvan::OnUseWhenReveal(Dealer & dealer, const Actor & actor, Index idx) const
+CylvanCard::OnUseWhenReveal(Dealer & dealer, const Actor & actor, Index idx) const
 {
     if (!CanUseWhenReveal()) {
         return false;
@@ -88,7 +85,7 @@ Cylvan::OnUseWhenReveal(Dealer & dealer, const Actor & actor, Index idx) const
 }
 
 bool
-Cylvan::OnUseWhenDefend(Dealer & dealer, const Actor & actor, Index idx) const
+CylvanCard::OnUseWhenDefend(Dealer & dealer, const Actor & actor, Index idx) const
 {
     if (!CanUseWhenDefend()) {
         return false;
@@ -96,9 +93,9 @@ Cylvan::OnUseWhenDefend(Dealer & dealer, const Actor & actor, Index idx) const
     return OnUse(dealer, actor, idx);
 }
 
-class OnFieldCylvan: public Cylvan {
+class OnFieldCylvanCard: public CylvanCard {
 public:
-    OnFieldCylvan(unsigned cost): Cylvan(cost) {/* Empty. */}
+    OnFieldCylvanCard(unsigned cost): CylvanCard(cost) {/* Empty. */}
 
 private:
     bool CanUseWhenReveal() const override { return false; }
@@ -107,7 +104,7 @@ private:
 };
 
 bool
-OnFieldCylvan::OnUseEffect(Dealer & dealer, const Actor & actor, Index idx) const
+OnFieldCylvanCard::OnUseEffect(Dealer & dealer, const Actor & actor, Index idx) const
 {
     auto row = actor.AnswerIndex("put field row");
     auto col = actor.AnswerIndex("put field col");
@@ -115,9 +112,9 @@ OnFieldCylvan::OnUseEffect(Dealer & dealer, const Actor & actor, Index idx) cons
     return dealer.Perform(*operation::PutCylvan(idx, {row, col}));
 }
 
-class Fountain: public OnFieldCylvan {
+class FountainCard: public OnFieldCylvanCard {
 public:
-    Fountain(unsigned cost, unsigned strength): OnFieldCylvan(cost), _strength(strength) {/* Empty. */}
+    FountainCard(unsigned cost, unsigned strength): OnFieldCylvanCard(cost), _strength(strength) {/* Empty. */}
 
     unsigned GetStrength() const override { return _strength; }
     unsigned GetVitality() const override { return 0; }
@@ -126,9 +123,9 @@ private:
     unsigned _strength;
 };
 
-class Tree: public OnFieldCylvan {
+class TreeCard: public OnFieldCylvanCard {
 public:
-    Tree(unsigned cost, unsigned vitality): OnFieldCylvan(cost), _vitality(vitality) {/* Empty. */}
+    TreeCard(unsigned cost, unsigned vitality): OnFieldCylvanCard(cost), _vitality(vitality) {/* Empty. */}
 
     unsigned GetStrength() const override { return 0; }
     unsigned GetVitality() const override { return _vitality; }
@@ -137,33 +134,33 @@ private:
     unsigned _vitality;
 };
 
-class Animal: public Cylvan {
+class AnimalCard: public CylvanCard {
 public:
-    Animal(unsigned cost): Cylvan(cost) {/* Empty. */}
+    AnimalCard(unsigned cost): CylvanCard(cost) {/* Empty. */}
 
     unsigned GetStrength() const override { return 0; }
     unsigned GetVitality() const override { return 0; }
 };
 
-class DefenseAnimal: public Animal {
+class DefenseAnimalCard: public AnimalCard {
 public:
-    DefenseAnimal(unsigned cost): Animal(cost) {/* Empty. */}
+    DefenseAnimalCard(unsigned cost): AnimalCard(cost) {/* Empty. */}
 
 private:
     bool CanUseWhenReveal() const override { return false; }
     bool CanUseWhenDefend() const override { return true; }
 };
 
-class Whale: public DefenseAnimal {
+class WhaleCard: public DefenseAnimalCard {
 public:
-    Whale(): DefenseAnimal(0) {/* Empty. */}
+    WhaleCard(): DefenseAnimalCard(0) {/* Empty. */}
 
 private:
     bool OnUseEffect(Dealer & dealer, const Actor & actor, Index) const override;
 };
 
 bool
-Whale::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
+WhaleCard::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
 {
     // TODO error handling
     const auto fromRow = actor.AnswerIndex("elem from row");
@@ -173,16 +170,16 @@ Whale::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
     return dealer.Perform(*operation::MoveElemental({fromRow, fromCol}, {toRow, toCol}));
 }
 
-class Elephant: public DefenseAnimal {
+class ElephantCard: public DefenseAnimalCard {
 public:
-    Elephant(): DefenseAnimal(1) {/* Empty. */}
+    ElephantCard(): DefenseAnimalCard(1) {/* Empty. */}
 
 private:
     bool OnUseEffect(Dealer & dealer, const Actor & actor, Index) const override;
 };
 
 bool
-Elephant::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
+ElephantCard::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
 {
     const auto row = actor.AnswerIndex("elem row");
     const auto col = actor.AnswerIndex("elem col");
@@ -193,9 +190,9 @@ Elephant::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
     return dealer.Perform(*operation::RemoveFromField({row, col}));
 }
 
-class Hedgehogs: public Animal {
+class HedgehogsCard: public AnimalCard {
 public:
-    Hedgehogs(): Animal(0) {/* Empty. */}
+    HedgehogsCard(): AnimalCard(0) {/* Empty. */}
 
 private:
     bool CanUseWhenReveal() const override { return true; }
@@ -204,7 +201,7 @@ private:
 };
 
 bool
-Hedgehogs::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
+HedgehogsCard::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
 {
     const auto row = actor.AnswerIndex("elem row");
     const auto col = Field::col - 1;
@@ -215,21 +212,21 @@ Hedgehogs::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
     return dealer.Perform(*operation::RemoveFromField({row, col}));
 }
 
-class Owl: public DefenseAnimal {
+class OwlCard: public DefenseAnimalCard {
 public:
-    Owl(): DefenseAnimal(1) {/* Empty. */}
+    OwlCard(): DefenseAnimalCard(1) {/* Empty. */}
 
 private:
     bool OnUseEffect(Dealer & dealer, const Actor &, Index) const override;
 };
 
 bool
-Owl::OnUseEffect(Dealer & dealer, const Actor &, Index) const
+OwlCard::OnUseEffect(Dealer & dealer, const Actor &, Index) const
 {
     return dealer.Perform(*operation::PlayerDraw(3));
 }
 
-class Ravage: public NotNone {
+class RavageCard: public NotNoneCard {
 public:
     unsigned GetCost() const override { return 0; }
     unsigned GetVitality() const override { return 0; }
@@ -241,9 +238,9 @@ public:
     bool OnUseWhenDefend(Dealer &, const Actor &, Index) const override { throw std::logic_error("Ravage is not usable"); }
 };
 
-class Elemental: public Ravage {
+class ElementalCard: public RavageCard {
 public:
-    Elemental(bool enhanced, unsigned strength, unsigned enhancedStrength):
+    ElementalCard(bool enhanced, unsigned strength, unsigned enhancedStrength):
         _enhanced(enhanced), _strength(strength), _enhancedStrength(enhancedStrength)
         {/* Empty. */}
     unsigned GetStrength() const override { return _enhanced ? _enhancedStrength : _strength; }
@@ -261,7 +258,7 @@ private:
     unsigned _enhancedStrength;
 };
 
-class Support: public Ravage {
+class SupportCard: public RavageCard {
     unsigned GetStrength() const override { throw std::logic_error("Support has no strength"); }
 
     bool IsBlazing() const override { return false; }
@@ -275,7 +272,7 @@ private:
 };
 
 bool
-Support::OnBeforeMove(Dealer & dealer, const Actor & actor, const Location & location) const
+SupportCard::OnBeforeMove(Dealer & dealer, const Actor & actor, const Location & location) const
 {
     if (!OnBeforeMoveEffect(dealer, actor, location)) {
         return false;
@@ -283,14 +280,14 @@ Support::OnBeforeMove(Dealer & dealer, const Actor & actor, const Location & loc
     return dealer.Perform(*operation::RemoveFromField(location));
 }
 
-class Blaze: public Support {
+class BlazeCard: public SupportCard {
     unsigned GetPriority() const override { return 2; }
 
     bool OnBeforeMoveEffect(Dealer &, const Actor &, const Location &) const override;
 };
 
 bool
-Blaze::OnBeforeMoveEffect(Dealer &, const Actor &, const Location &) const
+BlazeCard::OnBeforeMoveEffect(Dealer &, const Actor &, const Location &) const
 {
     // const auto & field = dealer.GetContent().GetField();
     for (size_t row = 0; row < Field::row; ++row) {
@@ -301,99 +298,83 @@ Blaze::OnBeforeMoveEffect(Dealer &, const Actor &, const Location &) const
     return false;
 }
 
-class Simoon: public Support {
+class SimoonCard: public SupportCard {
     unsigned GetPriority() const override { return 3; }
 
     bool OnBeforeMoveEffect(Dealer &, const Actor &, const Location &) const override;
 };
 
 bool
-Simoon::OnBeforeMoveEffect(Dealer & dealer, const Actor &, const Location &) const
+SimoonCard::OnBeforeMoveEffect(Dealer & dealer, const Actor &, const Location &) const
 {
     MoveLeftAllElementals(dealer);
     return false;
 }
 
-class CardFactoryImpl: public CardFactory {
-public:
-    std::unique_ptr<Card> NewNone() override;
-    std::unique_ptr<Card> NewFountain(unsigned cost, unsigned strength) override;
-    std::unique_ptr<Card> NewTree(unsigned cost, unsigned vitality) override;
-    std::unique_ptr<Card> NewWhale() override;
-    std::unique_ptr<Card> NewElephant() override;
-    std::unique_ptr<Card> NewHedgehogs() override;
-    std::unique_ptr<Card> NewOwl() override;
-    std::unique_ptr<Card> NewElemental(unsigned strength, unsigned enhancedStrength) override;
-    std::unique_ptr<Card> NewBlaze() override;
-    std::unique_ptr<Card> NewSimoon() override;
-};
-
-std::unique_ptr<Card>
-CardFactoryImpl::NewNone()
-{
-    return std::make_unique<None>();
-}
-
-std::unique_ptr<Card>
-CardFactoryImpl::NewFountain(unsigned cost, unsigned strength)
-{
-    return std::make_unique<Fountain>(cost, strength);
-}
-
-std::unique_ptr<Card>
-CardFactoryImpl::NewTree(unsigned cost, unsigned vitality)
-{
-    return std::make_unique<Tree>(cost, vitality);
-}
-
-std::unique_ptr<Card>
-CardFactoryImpl::NewWhale()
-{
-    return std::make_unique<Whale>();
-}
-
-std::unique_ptr<Card>
-CardFactoryImpl::NewElephant()
-{
-    return std::make_unique<Elephant>();
-}
-
-std::unique_ptr<Card>
-CardFactoryImpl::NewHedgehogs()
-{
-    return std::make_unique<Hedgehogs>();
-}
-
-std::unique_ptr<Card>
-CardFactoryImpl::NewOwl()
-{
-    return std::make_unique<Owl>();
-}
-
-std::unique_ptr<Card>
-CardFactoryImpl::NewElemental(unsigned strength, unsigned enhancedStrength)
-{
-    return std::make_unique<Elemental>(false, strength, enhancedStrength);
-}
-
-std::unique_ptr<Card>
-CardFactoryImpl::NewBlaze()
-{
-    return std::make_unique<Blaze>();
-}
-
-std::unique_ptr<Card>
-CardFactoryImpl::NewSimoon()
-{
-    return std::make_unique<Simoon>();
-}
-
 } // namespace
 
-std::unique_ptr<CardFactory>
-NewCardFactory()
+namespace card {
+
+std::unique_ptr<Card>
+None()
 {
-    return std::make_unique<CardFactoryImpl>();
+    return std::make_unique<NoneCard>();
 }
+
+std::unique_ptr<Card>
+Fountain(unsigned cost, unsigned strength)
+{
+    return std::make_unique<FountainCard>(cost, strength);
+}
+
+std::unique_ptr<Card>
+Tree(unsigned cost, unsigned vitality)
+{
+    return std::make_unique<TreeCard>(cost, vitality);
+}
+
+std::unique_ptr<Card>
+Whale()
+{
+    return std::make_unique<WhaleCard>();
+}
+
+std::unique_ptr<Card>
+Elephant()
+{
+    return std::make_unique<ElephantCard>();
+}
+
+std::unique_ptr<Card>
+Hedgehogs()
+{
+    return std::make_unique<HedgehogsCard>();
+}
+
+std::unique_ptr<Card>
+Owl()
+{
+    return std::make_unique<OwlCard>();
+}
+
+std::unique_ptr<Card>
+Elemental(unsigned strength, unsigned enhancedStrength)
+{
+    return std::make_unique<ElementalCard>(false, strength, enhancedStrength);
+}
+
+std::unique_ptr<Card>
+Blaze()
+{
+    return std::make_unique<BlazeCard>();
+}
+
+std::unique_ptr<Card>
+Simoon()
+{
+    return std::make_unique<SimoonCard>();
+}
+
+} // namespace card
 
 } // namespace cylvionpp

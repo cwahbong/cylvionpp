@@ -11,7 +11,7 @@ class CardFactory;
 class Content;
 
 std::unique_ptr<Content>
-CYLVIONPP_EXPORT MakeIntroContent(CardFactory & cardFactory);
+CYLVIONPP_EXPORT MakeIntroContent();
 
 // TODO MakeFullGame
 
