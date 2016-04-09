@@ -1,6 +1,8 @@
 #include "support.h"
 
+#include "cylvionpp/dealer.h"
 #include "cylvionpp/field.h"
+#include "cylvionpp/operation.h"
 
 namespace cylvionpp {
 namespace card {
@@ -20,12 +22,11 @@ BlazeCard::GetPriority() const
 }
 
 bool
-BlazeCard::OnBeforeMoveEffect(Dealer &, const Actor &, const Location &) const
+BlazeCard::OnBeforeMoveEffect(Dealer & dealer, const Actor &, const Location &) const
 {
-    // const auto & field = dealer.GetContent().GetField();
-    for (size_t row = 0; row < Field::row; ++row) {
-        for (size_t col = 0; col < Field::col; ++col) {
-            // XXX field.Peek(row, col).SetBlaze();
+    for (Index row = 0; row < Field::row; ++row) {
+        for (Index col = 0; col < Field::col; ++col) {
+            dealer.Perform(*operation::BlazeElemental({row, col}));
         }
     }
     return false;
