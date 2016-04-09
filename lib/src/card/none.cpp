@@ -1,6 +1,7 @@
 #include "cylvionpp/card.h"
 
 namespace cylvionpp {
+namespace card {
 
 namespace {
 
@@ -31,5 +32,5 @@ None()
     return std::make_unique<NoneCard>();
 }
 
-
+} // namespace card
 } // namespace cylvionpp
