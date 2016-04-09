@@ -60,7 +60,7 @@ ActRevealActions(Dealer & dealer, const Actor & actor)
     };
     auto cardOnUse = [&actor, &dealer](Index idx) {
         const auto & card = dealer.GetContent().GetHand().Peek(idx);
-        return card->OnUseWhenReveal(dealer, actor, idx);
+        return card.OnUseWhenReveal(dealer, actor, idx);
     };
     return ActActions(dealer, getAction, cardOnUse);
 }
@@ -73,7 +73,7 @@ ActDefendActions(Dealer & dealer, const Actor & actor)
     };
     auto cardOnUse = [&actor, &dealer](Index idx) {
         const auto & card = dealer.GetContent().GetHand().Peek(idx);
-        return card->OnUseWhenDefend(dealer, actor, idx);
+        return card.OnUseWhenDefend(dealer, actor, idx);
     };
     return ActActions(dealer, getAction, cardOnUse);
 }

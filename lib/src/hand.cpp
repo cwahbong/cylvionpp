@@ -12,7 +12,7 @@ class HandImpl: public Hand {
 public:
     size_t Size() const override;
 
-    const std::unique_ptr<Card> & Peek(Index idx) const override;
+    const Card & Peek(Index idx) const override;
     void Add(std::unique_ptr<Card> && card) override;
     std::unique_ptr<Card> Remove(Index idx) override;
 
@@ -26,10 +26,10 @@ HandImpl::Size() const
     return c.size();
 }
 
-const std::unique_ptr<Card> &
+const Card &
 HandImpl::Peek(Index idx) const
 {
-    return c.at(idx);
+    return *c.at(idx);
 }
 
 void

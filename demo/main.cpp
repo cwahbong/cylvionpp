@@ -47,7 +47,7 @@ DumpHand(const cylvionpp::Hand & hand)
 {
     std::ostringstream oss;
     for (cylvionpp::Index idx = 0; idx < (int) hand.Size(); ++idx) {
-        oss << " [" << DumpCard(*hand.Peek(idx)) << "]";
+        oss << " [" << DumpCard(hand.Peek(idx)) << "]";
     }
     oss << "\n";
     return oss.str();
