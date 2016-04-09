@@ -11,6 +11,7 @@ namespace cylvionpp {
 class Actor;
 class Dealer;
 
+CYLVIONPP_EXPORT bool MoveElemental(Dealer & dealer, const Location & from, const Location & to);
 CYLVIONPP_EXPORT bool MoveLeftAllElementals(Dealer & dealer);
 CYLVIONPP_EXPORT bool DiscardChooseFromHand(Dealer & dealer, const Actor & actor);
 CYLVIONPP_EXPORT bool ResolveSupport(Dealer & dealer, const Actor & actor, const Location & location);

@@ -10,6 +10,32 @@
 namespace cylvionpp {
 
 bool
+MoveElemental(Dealer & dealer, const Location & from, const Location & to)
+{
+    const auto & field = dealer.GetContent().GetField();
+    const auto & movingCard = field.Peek(from);
+    if (!movingCard.IsRavage()) {
+        throw std::logic_error("should be an elemental");
+    }
+    bool elementalAlive = true;
+    const auto & destCard = field.Peek(to);
+    if (destCard.IsCylvan()) {
+        if (movingCard.GetStrength() <= destCard.GetStrength()) {
+            elementalAlive = false;
+        }
+        if (movingCard.GetStrength() >= destCard.GetStrength()) {
+            dealer.Perform(*operation::RemoveFromField(to));
+        }
+    }
+    if (elementalAlive) {
+        dealer.Perform(*operation::MoveElemental(from, to));
+    } else {
+        dealer.Perform(*operation::RemoveFromField(from));
+    }
+    return true;
+}
+
+bool
 MoveLeftAllElementals(Dealer & dealer)
 {
     const auto & field = dealer.GetContent().GetField();
@@ -24,7 +50,7 @@ MoveLeftAllElementals(Dealer & dealer)
                     return false;
                 }
             } else {
-                if (!dealer.Perform(*operation::MoveElemental({row, col}, {row, col - 1}))) {
+                if (!MoveElemental(dealer, {row, col}, {row, col - 1})) {
                     return false;
                 }
             }

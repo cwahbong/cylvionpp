@@ -122,28 +122,4 @@ Field::New()
     return std::make_unique<FieldImpl>();
 }
 
-void
-MoveElemental(Field & field, const Location & from, const Location & to)
-{
-    const auto & movingCard = field.Peek(from);
-    if (!movingCard.IsRavage()) {
-        throw std::logic_error("should be an elemental");
-    }
-    bool elementalAlive = true;
-    const auto & destCard = field.Peek(to);
-    if (destCard.IsCylvan()) {
-        if (movingCard.GetStrength() <= destCard.GetStrength()) {
-            elementalAlive = false;
-        }
-        if (movingCard.GetStrength() >= destCard.GetStrength()) {
-            field.Remove(to);
-        }
-    }
-    if (elementalAlive) {
-        field.Move(from, to);
-    } else {
-        field.Remove(from);
-    }
-}
-
 } // namespace cylvionpp

@@ -1,8 +1,7 @@
 #include "defense_animal.h"
 
 #include "cylvionpp/actor.h"
-#include "cylvionpp/dealer.h"
-#include "cylvionpp/operation.h"
+#include "cylvionpp/dealer_helper.h"
 
 namespace cylvionpp {
 namespace card {
@@ -29,7 +28,7 @@ WhaleCard::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
     const auto fromCol = actor.AnswerIndex("elem from col");
     const auto toRow = actor.AnswerIndex("elem to row");
     const auto toCol = actor.AnswerIndex("elem to col");
-    return dealer.Perform(*operation::MoveElemental({fromRow, fromCol}, {toRow, toCol}));
+    return MoveElemental(dealer, {fromRow, fromCol}, {toRow, toCol});
 }
 
 } // namespace
