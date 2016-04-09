@@ -4,6 +4,7 @@
 #include "cylvionpp/content.h"
 #include "cylvionpp/field.h"
 #include "cylvionpp/game.h"
+#include "cylvionpp/phase.h"
 #include "cylvionpp/stack.h"
 
 namespace cylvionpp {
@@ -52,6 +53,12 @@ MakeIntroContent()
         return nullptr;
     }
     return content;
+}
+
+std::unique_ptr<Game>
+MakeIntroGame(std::shared_ptr<Actor> actor, std::shared_ptr<Observer> observer)
+{
+    return Game::New(actor, observer, phase::StartingDraw(), MakeIntroContent());
 }
 
 } // namespace cylvionpp

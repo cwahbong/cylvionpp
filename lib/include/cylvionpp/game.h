@@ -8,8 +8,9 @@
 namespace cylvionpp {
 
 class Actor;
-class Observer;
 class Content;
+class Observer;
+class Phase;
 
 class CYLVIONPP_EXPORT Game {
 public:
@@ -17,7 +18,7 @@ public:
 
     virtual bool Run() = 0;
 
-    static std::unique_ptr<Game> New(std::shared_ptr<Actor>, std::shared_ptr<Observer>, std::unique_ptr<Content> &&);
+    static std::unique_ptr<Game> New(std::shared_ptr<Actor>, std::shared_ptr<Observer>, std::unique_ptr<Phase>, std::unique_ptr<Content>);
 };
 
 } // namespace cylvionpp

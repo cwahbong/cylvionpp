@@ -7,11 +7,16 @@
 
 namespace cylvionpp {
 
-class CardFactory;
+class Actor;
 class Content;
+class Game;
+class Observer;
 
 std::unique_ptr<Content>
 CYLVIONPP_EXPORT MakeIntroContent();
+
+std::unique_ptr<Game>
+CYLVIONPP_EXPORT MakeIntroGame(std::shared_ptr<Actor>, std::shared_ptr<Observer>);
 
 // TODO MakeFullGame
 
