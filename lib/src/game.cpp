@@ -1,19 +1,8 @@
 #include "cylvionpp/game.h"
 
-#include <sstream>
-#include <utility>
-
-#include "cylvionpp/actor.h"
-#include "cylvionpp/card.h"
 #include "cylvionpp/content.h"
-#include "cylvionpp/content_helper.h"
 #include "cylvionpp/dealer.h"
-#include "cylvionpp/dealer_helper.h"
-#include "cylvionpp/field.h"
-#include "cylvionpp/hand.h"
 #include "cylvionpp/phase.h"
-#include "cylvionpp/operation.h"
-#include "cylvionpp/stack.h"
 
 namespace cylvionpp {
 
