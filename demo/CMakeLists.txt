@@ -1,0 +1,6 @@
+PROJECT(cylvionppdemo)
+
+AUX_SOURCE_DIRECTORY(. cylvionppdemo_SOURCES)
+
+ADD_EXECUTABLE(${PROJECT_NAME} ${cylvionppdemo_SOURCES})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} cylvionpp)
