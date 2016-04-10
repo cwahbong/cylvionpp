@@ -31,8 +31,8 @@ public:
     static std::unique_ptr<Field> New();
 };
 
-bool operator==(const Field &, const Field &);
-bool operator!=(const Field &, const Field &);
+CYLVIONPP_EXPORT bool operator==(const Field &, const Field &);
+CYLVIONPP_EXPORT bool operator!=(const Field &, const Field &);
 
 } // namespace cylvionpp
 

@@ -21,8 +21,8 @@ public:
     static std::unique_ptr<Stack> New();
 };
 
-bool operator==(const Stack &, const Stack &);
-bool operator!=(const Stack &, const Stack &);
+CYLVIONPP_EXPORT bool operator==(const Stack &, const Stack &);
+CYLVIONPP_EXPORT bool operator!=(const Stack &, const Stack &);
 
 } // namespace cylvionpp
 

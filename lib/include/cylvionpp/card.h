@@ -34,8 +34,8 @@ public:
     virtual bool OnUseWhenReveal(Dealer & dealer, const Actor & actor, Index index) const = 0;
     virtual bool OnUseWhenDefend(Dealer & dealer, const Actor & actor, Index index) const = 0;
 
-    friend bool operator==(const Card &, const Card &);
-    friend bool operator!=(const Card &, const Card &);
+    CYLVIONPP_EXPORT friend bool operator==(const Card &, const Card &);
+    CYLVIONPP_EXPORT friend bool operator!=(const Card &, const Card &);
 };
 
 namespace card {

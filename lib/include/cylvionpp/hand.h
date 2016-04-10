@@ -24,8 +24,8 @@ public:
     static std::unique_ptr<Hand> New();
 };
 
-bool operator==(const Hand &, const Hand &);
-bool operator!=(const Hand &, const Hand &);
+CYLVIONPP_EXPORT bool operator==(const Hand &, const Hand &);
+CYLVIONPP_EXPORT bool operator!=(const Hand &, const Hand &);
 
 } // namespace cylvionpp
 

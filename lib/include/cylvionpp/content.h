@@ -39,8 +39,8 @@ public:
     static std::unique_ptr<Content> New();
 };
 
-bool operator==(const Content &, const Content &);
-bool operator!=(const Content &, const Content &);
+CYLVIONPP_EXPORT bool operator==(const Content &, const Content &);
+CYLVIONPP_EXPORT bool operator!=(const Content &, const Content &);
 
 } // namespace cylvionpp
 
