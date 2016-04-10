@@ -15,8 +15,8 @@ INSTALL(TARGETS cylvionpp LIBRARY DESTINATION lib)
 
 IF(BUILD_TESTING)
   INCLUDE(${cylvionpp_SOURCE_DIR}/cmake/Catch.cmake)
-  AUX_SOURCE_DIRECTORY(test libcylvionpp_TEST_SOURCES)
-  ADD_CATCH_TEST_EXECUTABLE(libcylvionpp_test ${libcylvionpp_TEST_SOURCES})
+  FILE(GLOB_RECURSE libcylvionpp_test_SOURCES test/*.cpp)
+  ADD_CATCH_TEST_EXECUTABLE(libcylvionpp_test ${libcylvionpp_test_SOURCES})
   TARGET_LINK_LIBRARIES(libcylvionpp_test cylvionpp)
 ENDIF(BUILD_TESTING)
 #INSTALL(FILES
