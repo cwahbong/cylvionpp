@@ -10,10 +10,17 @@ namespace card {
 namespace {
 
 class BlazeCard: public SupportCard {
+    std::string GetName() const override;
     unsigned GetPriority() const override;
 
     bool OnBeforeMoveEffect(Dealer &, const Actor &, const Location &) const override;
 };
+
+std::string
+BlazeCard::GetName() const
+{
+    return "blaze";
+}
 
 unsigned
 BlazeCard::GetPriority() const
@@ -29,7 +36,7 @@ BlazeCard::OnBeforeMoveEffect(Dealer & dealer, const Actor &, const Location &) 
             dealer.Perform(*operation::BlazeElemental({row, col}));
         }
     }
-    return false;
+    return true;
 }
 
 } // namespace

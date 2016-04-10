@@ -122,4 +122,27 @@ Field::New()
     return std::make_unique<FieldImpl>();
 }
 
+bool
+operator==(const Field & lhs, const Field & rhs)
+{
+    for (Index row = 0; row < Field::row; ++row) {
+        if (lhs.GetRavageStack(row) != rhs.GetRavageStack(row)) {
+            return false;
+        }
+        for (Index col = 0; col < Field::col; ++col) {
+            const Location location{row, col};
+            if (lhs.Peek(location) != rhs.Peek(location)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool
+operator!=(const Field & lhs, const Field & rhs)
+{
+    return !(lhs == rhs);
+}
+
 } // namespace cylvionpp

@@ -8,6 +8,8 @@ namespace {
 class ElementalCard: public RavageCard {
 public:
     ElementalCard(bool enhanced, unsigned strength, unsigned enhancedStrength);
+
+    std::string GetName() const override;
     unsigned GetStrength() const override;
     unsigned GetPriority() const override;
 
@@ -27,6 +29,20 @@ ElementalCard::ElementalCard(bool enhanced, unsigned strength, unsigned enhanced
     _strength(strength),
     _enhancedStrength(enhancedStrength)
 {/* Empty. */}
+
+std::string
+ElementalCard::GetName() const
+{
+    std::string name = "elemental";
+    if (_enhanced) {
+        name += "*";
+    }
+    name += " ";
+    name += std::to_string(_strength);
+    name += " ";
+    name += std::to_string(_enhancedStrength);
+    return name;
+}
 
 unsigned
 ElementalCard::GetStrength() const

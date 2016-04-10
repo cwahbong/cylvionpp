@@ -8,10 +8,17 @@ namespace card {
 namespace {
 
 class SimoonCard: public SupportCard {
+    std::string GetName() const override;
     unsigned GetPriority() const override;
 
     bool OnBeforeMoveEffect(Dealer &, const Actor &, const Location &) const override;
 };
+
+std::string
+SimoonCard::GetName() const
+{
+    return "simoon";
+}
 
 unsigned
 SimoonCard::GetPriority() const
@@ -23,7 +30,7 @@ bool
 SimoonCard::OnBeforeMoveEffect(Dealer & dealer, const Actor &, const Location &) const
 {
     MoveLeftAllElementals(dealer);
-    return false;
+    return true;
 }
 
 } // namespace

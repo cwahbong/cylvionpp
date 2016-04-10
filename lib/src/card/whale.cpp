@@ -12,6 +12,8 @@ class WhaleCard: public DefenseAnimalCard {
 public:
     WhaleCard();
 
+    std::string GetName() const override;
+
 private:
     bool OnUseEffect(Dealer & dealer, const Actor & actor, Index) const override;
 };
@@ -19,6 +21,12 @@ private:
 WhaleCard::WhaleCard():
     DefenseAnimalCard(0)
 {/* Empty. */}
+
+std::string
+WhaleCard::GetName() const
+{
+    return "whale";
+}
 
 bool
 WhaleCard::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const

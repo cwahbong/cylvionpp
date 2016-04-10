@@ -69,4 +69,21 @@ Content::New()
     return std::make_unique<ContentImpl>();
 }
 
+bool
+operator==(const Content & lhs, const Content & rhs)
+{
+    return lhs.GetEdge() == rhs.GetEdge() &&
+        lhs.GetMana() == rhs.GetMana() &&
+        lhs.GetField() == rhs.GetField() &&
+        lhs.GetHand() == rhs.GetHand() &&
+        lhs.GetDiscarded() == rhs.GetDiscarded() &&
+        lhs.GetUndrawn() == rhs.GetUndrawn();
+}
+
+bool
+operator!=(const Content & lhs, const Content & rhs)
+{
+    return !(lhs == rhs);
+}
+
 } // namespace cylvionpp

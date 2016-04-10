@@ -29,10 +29,10 @@ public:
     const static Index row = 4;
     const static Index col = 5;
     static std::unique_ptr<Field> New();
-
 };
 
-void CYLVIONPP_EXPORT MoveElemental(Field & field, const Location & from, const Location & to);
+bool operator==(const Field &, const Field &);
+bool operator!=(const Field &, const Field &);
 
 } // namespace cylvionpp
 

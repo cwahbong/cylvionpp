@@ -13,12 +13,16 @@ public:
     virtual unsigned Size() const = 0;
 
     virtual const std::unique_ptr<Card> & Peek() const = 0;
+    virtual const std::unique_ptr<Card> & Peek(Index idx) const = 0;
     virtual void Push(std::unique_ptr<Card> &&) = 0;
     virtual std::unique_ptr<Card> Pop() = 0;
     virtual void Shuffle() = 0;
 
     static std::unique_ptr<Stack> New();
 };
+
+bool operator==(const Stack &, const Stack &);
+bool operator!=(const Stack &, const Stack &);
 
 } // namespace cylvionpp
 

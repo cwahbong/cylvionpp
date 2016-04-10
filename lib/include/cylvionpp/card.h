@@ -5,6 +5,7 @@
 #include "types.h"
 
 #include <memory>
+#include <string>
 
 namespace cylvionpp {
 
@@ -14,6 +15,8 @@ class Dealer;
 class CYLVIONPP_EXPORT Card {
 public:
     virtual ~Card() = 0;
+
+    virtual std::string GetName() const = 0;
 
     virtual unsigned GetCost() const = 0;
     virtual unsigned GetStrength() const = 0;
@@ -30,6 +33,9 @@ public:
     virtual bool OnBeforeMove(Dealer & dealer, const Actor & actor, const Location & location) const = 0;
     virtual bool OnUseWhenReveal(Dealer & dealer, const Actor & actor, Index index) const = 0;
     virtual bool OnUseWhenDefend(Dealer & dealer, const Actor & actor, Index index) const = 0;
+
+    friend bool operator==(const Card &, const Card &);
+    friend bool operator!=(const Card &, const Card &);
 };
 
 namespace card {

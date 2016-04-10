@@ -8,6 +8,7 @@ class FountainCard: public OnFieldCylvanCard {
 public:
     FountainCard(unsigned cost, unsigned strength);
 
+    std::string GetName() const override;
     unsigned GetStrength() const override;
     unsigned GetVitality() const override;
 
@@ -19,6 +20,12 @@ FountainCard::FountainCard(unsigned cost, unsigned strength):
     OnFieldCylvanCard(cost),
     _strength(strength)
 {/* Empty. */}
+
+std::string
+FountainCard::GetName() const
+{
+    return std::string("fountain ") + std::to_string(GetCost()) + " " + std::to_string(_strength);
+}
 
 unsigned
 FountainCard::GetStrength() const

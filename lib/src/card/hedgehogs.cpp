@@ -15,6 +15,8 @@ class HedgehogsCard: public AnimalCard {
 public:
     HedgehogsCard();
 
+    std::string GetName() const override;
+
 private:
     bool CanUseWhenReveal() const;
     bool CanUseWhenDefend() const;
@@ -24,6 +26,12 @@ private:
 HedgehogsCard::HedgehogsCard():
     AnimalCard(0)
 {/* Empty. */}
+
+std::string
+HedgehogsCard::GetName() const
+{
+    return "hedgehogs";
+}
 
 bool
 HedgehogsCard::CanUseWhenReveal() const

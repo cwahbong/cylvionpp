@@ -19,6 +19,7 @@ public:
     unsigned Size() const override;
 
     const std::unique_ptr<Card> & Peek() const override;
+    const std::unique_ptr<Card> & Peek(Index idx) const override;
     void Push(std::unique_ptr<Card> &&) override;
     std::unique_ptr<Card> Pop() override;
     void Shuffle() override;
@@ -43,6 +44,12 @@ const std::unique_ptr<Card> &
 StackImpl::Peek() const
 {
     return c.back();
+}
+
+const std::unique_ptr<Card> &
+StackImpl::Peek(Index idx) const
+{
+    return c[idx];
 }
 
 void
@@ -79,6 +86,26 @@ std::unique_ptr<Stack>
 Stack::New()
 {
     return std::make_unique<StackImpl>();
+}
+
+bool
+operator==(const Stack & lhs, const Stack & rhs)
+{
+    if (lhs.Size() != rhs.Size()) {
+        return false;
+    }
+    for (Index i = 0; i < lhs.Size(); ++i) {
+        if (lhs.Peek(i) != rhs.Peek(i)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool
+operator!=(const Stack & lhs, const Stack & rhs)
+{
+    return !(lhs == rhs);
 }
 
 } // namespace cylvionpp

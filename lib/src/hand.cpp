@@ -10,7 +10,7 @@ namespace {
 
 class HandImpl: public Hand {
 public:
-    size_t Size() const override;
+    Index Size() const override;
 
     const Card & Peek(Index idx) const override;
     void Add(std::unique_ptr<Card> && card) override;
@@ -20,7 +20,7 @@ private:
     std::vector<std::unique_ptr<Card>> c;
 };
 
-size_t
+Index
 HandImpl::Size() const
 {
     return c.size();
@@ -56,6 +56,26 @@ std::unique_ptr<Hand>
 Hand::New()
 {
     return std::make_unique<HandImpl>();
+}
+
+bool
+operator==(const Hand & lhs, const Hand & rhs)
+{
+    if (lhs.Size() != rhs.Size()) {
+        return false;
+    }
+    for (Index i = 0; i < lhs.Size(); ++i) {
+        if (lhs.Peek(i) != rhs.Peek(i)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool
+operator!=(const Hand & lhs, const Hand & rhs)
+{
+    return !(lhs == rhs);
 }
 
 } // namespace cylvionpp

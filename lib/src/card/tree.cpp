@@ -9,6 +9,7 @@ class TreeCard: public OnFieldCylvanCard {
 public:
     TreeCard(unsigned cost, unsigned vitality);
 
+    std::string GetName() const override;
     unsigned GetStrength() const override;
     unsigned GetVitality() const override;
 
@@ -20,6 +21,12 @@ TreeCard::TreeCard(unsigned cost, unsigned vitality):
     OnFieldCylvanCard(cost),
     _vitality(vitality)
 {/* Empty. */}
+
+std::string
+TreeCard::GetName() const
+{
+    return std::string("tree ") + std::to_string(GetCost()) + " " + std::to_string(_vitality);
+}
 
 unsigned
 TreeCard::GetStrength() const

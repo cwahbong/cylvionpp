@@ -15,7 +15,7 @@ class CYLVIONPP_EXPORT Hand {
 public:
     virtual ~Hand() = 0;
 
-    virtual size_t Size() const = 0;
+    virtual Index Size() const = 0;
 
     virtual const Card & Peek(Index idx) const = 0;
     virtual void Add(std::unique_ptr<Card> && card) = 0;
@@ -23,6 +23,9 @@ public:
 
     static std::unique_ptr<Hand> New();
 };
+
+bool operator==(const Hand &, const Hand &);
+bool operator!=(const Hand &, const Hand &);
 
 } // namespace cylvionpp
 
