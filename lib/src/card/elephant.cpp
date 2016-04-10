@@ -15,7 +15,7 @@ class ElephantCard: public DefenseAnimalCard {
 public:
     ElephantCard();
 
-    std::string GetName() const;
+    std::string GetName() const override;
 
 private:
     bool OnUseEffect(Dealer & dealer, const Actor & actor, Index) const override;

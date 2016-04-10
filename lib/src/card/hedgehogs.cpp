@@ -18,8 +18,8 @@ public:
     std::string GetName() const override;
 
 private:
-    bool CanUseWhenReveal() const;
-    bool CanUseWhenDefend() const;
+    bool CanUseWhenReveal() const override;
+    bool CanUseWhenDefend() const override;
     bool OnUseEffect(Dealer & dealer, const Actor & actor, Index) const override;
 };
 
