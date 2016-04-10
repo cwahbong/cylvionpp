@@ -1,6 +1,6 @@
 PROJECT(libcylvionpp)
 
-FILE(GLOB_RECURSE libcylvionpp_SOURCES src *.cpp)
+FILE(GLOB_RECURSE libcylvionpp_SOURCES src/*.cpp)
 
 SET(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
@@ -12,6 +12,13 @@ INCLUDE(GenerateExportHeader)
 GENERATE_EXPORT_HEADER(${LIBRARY_NAME})
 
 INSTALL(TARGETS cylvionpp LIBRARY DESTINATION lib)
+
+IF(CYLVIONPP_BUILD_TESTS)
+  INCLUDE(${cylvionpp_SOURCE_DIR}/cmake/Catch.cmake)
+  AUX_SOURCE_DIRECTORY(test libcylvionpp_TEST_SOURCES)
+  ADD_CATCH_TEST_EXECUTABLE(libcylvionpp_test ${libcylvionpp_TEST_SOURCES})
+  TARGET_LINK_LIBRARIES(libcylvionpp_test cylvionpp)
+ENDIF(CYLVIONPP_BUILD_TESTS)
 #INSTALL(FILES
 #  ${PROJECT_BINARY_DIR}/cylvionpp_export.h
 #  PUBLIC_HEADER
