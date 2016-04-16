@@ -21,6 +21,7 @@ ENDFUNCTION(PREPARE_CATCH)
 FUNCTION(ADD_CATCH_TEST_EXECUTABLE target_name)
   PREPARE_CATCH()
   ADD_EXECUTABLE(${target_name} ${ARGN})
+  ADD_DEPENDENCIES(${target_name} Catch)
   ADD_TEST(NAME ${target_name} COMMAND ${target_name})
 
   ExternalProject_Get_Property(Catch source_dir)
