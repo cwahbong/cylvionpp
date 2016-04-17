@@ -5,6 +5,8 @@
 
 namespace cylvionpp {
 
+class Card;
+
 class CYLVIONPP_EXPORT Stack {
 public:
     virtual ~Stack() = 0;
