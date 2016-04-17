@@ -9,6 +9,7 @@
 namespace cylvionpp {
 
 class CardFactory;
+class Desertions;
 class Field;
 class Hand;
 class Stack;
@@ -36,6 +37,9 @@ public:
 
     virtual const Stack & GetSylvan() const = 0;
     virtual Stack & GetSylvan() = 0;
+
+    virtual const Desertions & GetDesertions() const = 0;
+    virtual Desertions & GetDesertions() = 0;
 
     virtual const Stack & GetDiscarded() const = 0;
     virtual Stack & GetDiscarded() = 0;

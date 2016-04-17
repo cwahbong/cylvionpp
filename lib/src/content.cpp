@@ -1,5 +1,6 @@
 #include "cylvionpp/content.h"
 
+#include "cylvionpp/desertions.h"
 #include "cylvionpp/field.h"
 #include "cylvionpp/hand.h"
 #include "cylvionpp/stack.h"
@@ -32,6 +33,9 @@ public:
     const Stack & GetSylvan() const override { return *_sylvan; }
     Stack & GetSylvan() override { return *_sylvan; }
 
+    const Desertions & GetDesertions() const override { return *_desertions; }
+    Desertions & GetDesertions() override { return *_desertions;}
+
     const Stack & GetDiscarded() const override { return *_discarded; }
     Stack & GetDiscarded() override { return *_discarded; }
 
@@ -45,6 +49,7 @@ private:
     std::unique_ptr<Hand> _hand;
     std::array<std::unique_ptr<Stack>, 4> _recuitment;
     std::unique_ptr<Stack> _sylvan;
+    std::unique_ptr<Desertions> _desertions;
     std::unique_ptr<Stack> _discarded;
     std::unique_ptr<Stack> _undrawn;
 };
@@ -54,9 +59,16 @@ ContentImpl::ContentImpl():
     _mana(0),
     _field(Field::New()),
     _hand(Hand::New()),
+    _recuitment(),
+    _sylvan(Stack::New()),
+    _desertions(Desertions::New()),
     _discarded(Stack::New()),
     _undrawn(Stack::New())
-{/* Empty. */}
+{
+    for (auto && stack: _recuitment) {
+        stack = Stack::New();
+    }
+}
 
 void
 ContentImpl::DecreaseEdge(unsigned amount)
