@@ -26,6 +26,12 @@ public:
     const Hand & GetHand() const override { return *_hand; }
     Hand & GetHand() override { return *_hand; }
 
+    const Stack & GetRecuitment(Index col) const override { return *_recuitment[col]; }
+    Stack & GetRecuitment(Index col) override { return *_recuitment[col]; }
+
+    const Stack & GetSylvan() const override { return *_sylvan; }
+    Stack & GetSylvan() override { return *_sylvan; }
+
     const Stack & GetDiscarded() const override { return *_discarded; }
     Stack & GetDiscarded() override { return *_discarded; }
 
@@ -37,6 +43,8 @@ private:
     unsigned _mana;
     std::unique_ptr<Field> _field;
     std::unique_ptr<Hand> _hand;
+    std::array<std::unique_ptr<Stack>, 4> _recuitment;
+    std::unique_ptr<Stack> _sylvan;
     std::unique_ptr<Stack> _discarded;
     std::unique_ptr<Stack> _undrawn;
 };

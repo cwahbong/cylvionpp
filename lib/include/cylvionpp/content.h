@@ -2,6 +2,7 @@
 #define CYLVIONPP_CONTENT_H
 
 #include "cylvionpp_export.h"
+#include "types.h"
 
 #include <memory>
 
@@ -29,6 +30,12 @@ public:
 
     virtual const Hand & GetHand() const = 0;
     virtual Hand & GetHand() = 0;
+
+    virtual const Stack & GetRecuitment(Index col) const = 0;
+    virtual Stack & GetRecuitment(Index col) = 0;
+
+    virtual const Stack & GetSylvan() const = 0;
+    virtual Stack & GetSylvan() = 0;
 
     virtual const Stack & GetDiscarded() const = 0;
     virtual Stack & GetDiscarded() = 0;

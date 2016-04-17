@@ -21,6 +21,10 @@ public:
 
 namespace phase {
 
+CYLVIONPP_EXPORT std::unique_ptr<Phase> Summon1();
+CYLVIONPP_EXPORT std::unique_ptr<Phase> Summon2();
+CYLVIONPP_EXPORT std::unique_ptr<Phase> Recuitment();
+CYLVIONPP_EXPORT std::unique_ptr<Phase> Desertion();
 CYLVIONPP_EXPORT std::unique_ptr<Phase> StartingDraw();
 CYLVIONPP_EXPORT std::unique_ptr<Phase> Reveal();
 CYLVIONPP_EXPORT std::unique_ptr<Phase> Move();

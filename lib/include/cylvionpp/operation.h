@@ -23,6 +23,7 @@ public:
 
 namespace operation {
 
+CYLVIONPP_EXPORT std::unique_ptr<Operation> SummonRecuitment(Index col);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> PlayerDraw(size_t count);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> PlayerDiscardHand(Index idx);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> DecreaseMana(size_t amount);
