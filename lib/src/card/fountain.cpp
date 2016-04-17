@@ -8,6 +8,8 @@ class FountainCard: public OnFieldCylvanCard {
 public:
     FountainCard(unsigned cost, unsigned strength);
 
+    bool IsTree() const override;
+
     std::string GetName() const override;
     unsigned GetStrength() const override;
     unsigned GetVitality() const override;
@@ -20,6 +22,12 @@ FountainCard::FountainCard(unsigned cost, unsigned strength):
     OnFieldCylvanCard(cost),
     _strength(strength)
 {/* Empty. */}
+
+bool
+FountainCard::IsTree() const
+{
+    return false;
+}
 
 std::string
 FountainCard::GetName() const

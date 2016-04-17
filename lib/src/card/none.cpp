@@ -14,6 +14,7 @@ public:
     unsigned GetPriority() const override { throw std::logic_error("None"); }
 
     bool IsCylvan() const override { return false; }
+    bool IsTree() const override { return false; }
     bool IsRavage() const override { return false; }
     bool IsBlazing() const override { return false; }
     bool IsNone() const override { return true; }

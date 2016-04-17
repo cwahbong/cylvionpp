@@ -24,6 +24,7 @@ public:
     virtual unsigned GetPriority() const = 0;
 
     virtual bool IsCylvan() const = 0;
+    virtual bool IsTree() const = 0;
     virtual bool IsRavage() const = 0;
     virtual bool IsBlazing() const = 0;
     virtual bool IsNone() const = 0;
@@ -47,6 +48,7 @@ CYLVIONPP_EXPORT std::unique_ptr<Card> Whale();
 CYLVIONPP_EXPORT std::unique_ptr<Card> Elephant();
 CYLVIONPP_EXPORT std::unique_ptr<Card> Hedgehogs();
 CYLVIONPP_EXPORT std::unique_ptr<Card> Owl();
+CYLVIONPP_EXPORT std::unique_ptr<Card> Stag();
 CYLVIONPP_EXPORT std::unique_ptr<Card> Elemental(unsigned strength, unsigned enhancedStrength);
 CYLVIONPP_EXPORT std::unique_ptr<Card> Blaze();
 CYLVIONPP_EXPORT std::unique_ptr<Card> Simoon();

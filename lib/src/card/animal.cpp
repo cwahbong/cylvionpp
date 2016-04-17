@@ -6,6 +6,12 @@ AnimalCard::AnimalCard(unsigned cost):
     CylvanCard(cost)
 {/* Empty. */}
 
+bool
+AnimalCard::IsTree() const
+{
+    return false;
+}
+
 unsigned
 AnimalCard::GetStrength() const
 {

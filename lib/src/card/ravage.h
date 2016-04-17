@@ -11,6 +11,7 @@ public:
     unsigned GetVitality() const override { return 0; }
 
     bool IsCylvan() const override { return false; }
+    bool IsTree() const override { return false; }
     bool IsRavage() const override { return true; }
 
     bool OnUseWhenReveal(Dealer &, const Actor &, Index) const override { throw std::logic_error("Ravage is not usable"); }

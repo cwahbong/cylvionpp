@@ -9,6 +9,8 @@ class TreeCard: public OnFieldCylvanCard {
 public:
     TreeCard(unsigned cost, unsigned vitality);
 
+    bool IsTree() const override;
+
     std::string GetName() const override;
     unsigned GetStrength() const override;
     unsigned GetVitality() const override;
@@ -21,6 +23,12 @@ TreeCard::TreeCard(unsigned cost, unsigned vitality):
     OnFieldCylvanCard(cost),
     _vitality(vitality)
 {/* Empty. */}
+
+bool
+TreeCard::IsTree() const
+{
+    return true;
+}
 
 std::string
 TreeCard::GetName() const

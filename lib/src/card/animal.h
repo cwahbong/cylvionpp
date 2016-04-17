@@ -9,6 +9,8 @@ class AnimalCard: public CylvanCard {
 public:
     AnimalCard(unsigned cost);
 
+    bool IsTree() const override;
+
     unsigned GetStrength() const;
     unsigned GetVitality() const;
 };
