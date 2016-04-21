@@ -17,7 +17,7 @@ public:
 std::unique_ptr<Phase>
 RecuitmentPhase::Action(Dealer & dealer, const Actor & actor)
 {
-    const auto idx = actor.AnswerIndex("recuit row");
+    const auto idx = actor.AnswerIndex("recuit row", dealer.GetContent());
     dealer.Perform(*operation::TakeRecuitment(idx));
     return Summon2();
 }

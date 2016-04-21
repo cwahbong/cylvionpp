@@ -25,8 +25,8 @@ OnFieldCylvanCard::CanUseWhenDefend() const
 bool
 OnFieldCylvanCard::OnUseEffect(Dealer & dealer, const Actor & actor, Index idx) const
 {
-    auto row = actor.AnswerIndex("put field row");
-    auto col = actor.AnswerIndex("put field col");
+    auto row = actor.AnswerIndex("put field row", dealer.GetContent());
+    auto col = actor.AnswerIndex("put field col", dealer.GetContent());
     // TODO check before put
     return dealer.Perform(*operation::PutCylvan(idx, {row, col}));
 }

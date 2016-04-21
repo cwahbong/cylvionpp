@@ -48,7 +48,7 @@ HedgehogsCard::CanUseWhenDefend() const
 bool
 HedgehogsCard::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
 {
-    const auto row = actor.AnswerIndex("elem row");
+    const auto row = actor.AnswerIndex("elem row", dealer.GetContent());
     const auto col = Field::col - 1;
     const auto & field = dealer.GetContent().GetField();
     if (!field.Peek({row, col}).IsRavage()) {

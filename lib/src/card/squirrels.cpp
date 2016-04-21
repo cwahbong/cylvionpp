@@ -34,7 +34,7 @@ bool
 SquirrelsCard::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
 {
     for (Index row = 0; row < Field::row; ++row) {
-        const auto reverse = actor.AnswerIndex("squirrels reverse");
+        const auto reverse = actor.AnswerIndex("squirrels reverse", dealer.GetContent());
         if (reverse) {
             dealer.Perform(*operation::ReverseTop2Ravage(reverse));
         }

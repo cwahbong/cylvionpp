@@ -5,7 +5,7 @@
 
 class EmptyActor: public cylvionpp::Actor {
 public:
-    cylvionpp::Index AnswerIndex(const std::string &) const override { return 0; }
+    cylvionpp::Index AnswerIndex(const std::string &, const cylvionpp::Content &) const override { return 0; }
     cylvionpp::Action RevealAction(const cylvionpp::Content &) const override { return {true, {}}; }
     cylvionpp::Action DefendAction(const cylvionpp::Content &) const override { return {true, {}}; }
 };

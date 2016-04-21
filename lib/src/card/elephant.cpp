@@ -34,8 +34,8 @@ ElephantCard::GetName() const
 bool
 ElephantCard::OnUseEffect(Dealer & dealer, const Actor & actor, Index) const
 {
-    const auto row = actor.AnswerIndex("elem row");
-    const auto col = actor.AnswerIndex("elem col");
+    const auto row = actor.AnswerIndex("elem row", dealer.GetContent());
+    const auto col = actor.AnswerIndex("elem col", dealer.GetContent());
     const auto & field = dealer.GetContent().GetField();
     if (!field.Peek({row, col}).IsNone()) {
         return false;

@@ -87,13 +87,13 @@ ParseAction(const std::string & line)
 
 class MyActor: public cylvionpp::Actor {
 public:
-    cylvionpp::Index AnswerIndex(const std::string & question) const override;
+    cylvionpp::Index AnswerIndex(const std::string & question, const cylvionpp::Content &) const override;
     cylvionpp::Action RevealAction(const cylvionpp::Content &) const override;
     cylvionpp::Action DefendAction(const cylvionpp::Content &) const override;
 };
 
 cylvionpp::Index
-MyActor::AnswerIndex(const std::string & question) const
+MyActor::AnswerIndex(const std::string & question, const cylvionpp::Content &) const
 {
     std::cout << "Question: " << question << std::endl;
     std::string line;

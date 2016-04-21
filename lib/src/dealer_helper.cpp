@@ -62,7 +62,7 @@ MoveLeftAllElementals(Dealer & dealer)
 bool
 DiscardChooseFromHand(Dealer & dealer, const Actor & actor)
 {
-    auto idx = actor.AnswerIndex("discard hand");
+    auto idx = actor.AnswerIndex("discard hand", dealer.GetContent());
     return dealer.Perform(*operation::PlayerDiscardHand(idx));
 }
 
