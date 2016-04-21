@@ -33,6 +33,7 @@ CYLVIONPP_EXPORT std::unique_ptr<Operation> IncreaseMana(size_t amount);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> IncreaseEdge(size_t amount);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> PutCylvan(Index idx, const Location & location);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> RevealRavage(Index row);
+CYLVIONPP_EXPORT std::unique_ptr<Operation> ReverseTop2Ravage(Index row);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> RemoveRavage(Index row);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> MoveElemental(const Location & from, const Location & to);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> MoveOutElemental(const Location & location);

@@ -50,6 +50,7 @@ CYLVIONPP_EXPORT std::unique_ptr<Card> Hedgehogs();
 CYLVIONPP_EXPORT std::unique_ptr<Card> Owl();
 CYLVIONPP_EXPORT std::unique_ptr<Card> Stag();
 CYLVIONPP_EXPORT std::unique_ptr<Card> Doves();
+CYLVIONPP_EXPORT std::unique_ptr<Card> Squirrels();
 CYLVIONPP_EXPORT std::unique_ptr<Card> Fish();
 CYLVIONPP_EXPORT std::unique_ptr<Card> Elemental(unsigned strength, unsigned enhancedStrength);
 CYLVIONPP_EXPORT std::unique_ptr<Card> Blaze();
