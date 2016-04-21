@@ -1,7 +1,9 @@
 #include "cylvionpp/content_helper.h"
 
+#include <chrono>
 #include <functional>
 #include <sstream>
+#include <random>
 
 #include "cylvionpp/actor.h"
 #include "cylvionpp/card.h"
@@ -76,6 +78,14 @@ ActDefendActions(Dealer & dealer, const Actor & actor)
         return card.OnUseWhenDefend(dealer, actor, idx);
     };
     return ActActions(dealer, getAction, cardOnUse);
+}
+
+Index
+RandomHandIdnex(const Content & content)
+{
+    const unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine engine(seed);
+    return std::uniform_int_distribution<>(0, content.GetHand().Size())(engine);
 }
 
 } // namespace cylvionpp
