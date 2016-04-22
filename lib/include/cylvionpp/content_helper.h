@@ -15,7 +15,7 @@ class Dealer;
 CYLVIONPP_EXPORT void StartingShuffle(Content & content);
 CYLVIONPP_EXPORT bool ActRevealActions(Dealer & dealer, const Actor & actor);
 CYLVIONPP_EXPORT bool ActDefendActions(Dealer & dealer, const Actor & actor);
-CYLVIONPP_EXPORT Index RandomHandIndex(Content & content);
+CYLVIONPP_EXPORT Index RandomHandIndex(const Content & content);
 
 } // namespace cylvionpp
 

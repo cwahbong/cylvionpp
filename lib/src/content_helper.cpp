@@ -81,7 +81,7 @@ ActDefendActions(Dealer & dealer, const Actor & actor)
 }
 
 Index
-RandomHandIdnex(const Content & content)
+RandomHandIndex(const Content & content)
 {
     const unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine engine(seed);

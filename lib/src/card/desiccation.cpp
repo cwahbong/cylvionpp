@@ -1,5 +1,6 @@
 #include "support.h"
 
+#include "cylvionpp/actor.h"
 #include "cylvionpp/content_helper.h"
 #include "cylvionpp/dealer.h"
 #include "cylvionpp/operation.h"
@@ -31,10 +32,10 @@ DesiccationCard::GetPriority() const
 bool
 DesiccationCard::OnBeforeMoveEffect(Dealer & dealer, const Actor & actor, const Location &) const
 {
-    const auto assign = actor.AnswerIndex("desiccation assign");
+    const auto assign = actor.AnswerIndex("desiccation assign", dealer.GetContent());
     if (assign) {
         for (unsigned i = 0; i < 2; ++i) {
-            const auto discardIndex = actor.AnswerIndex("desiccation discard");
+            const auto discardIndex = actor.AnswerIndex("desiccation discard", dealer.GetContent());
             dealer.Perform(*operation::PlayerDiscardHand(discardIndex));
         }
     } else {
