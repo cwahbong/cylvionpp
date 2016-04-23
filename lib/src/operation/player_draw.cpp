@@ -54,8 +54,8 @@ PlayerDrawOperation::Run(Content & content)
         auto & undrawn = content.GetUndrawn();
         if (undrawn.Empty()) {
             auto & discarded = content.GetDiscarded();
-            while (!discarded.Empty()) {
-                undrawn.Push(discarded.Pop());
+            while (discarded.Size()) {
+                undrawn.Push(discarded.Remove(0));
             }
             undrawn.Shuffle();
         }

@@ -80,12 +80,28 @@ ActDefendActions(Dealer & dealer, const Actor & actor)
     return ActActions(dealer, getAction, cardOnUse);
 }
 
+namespace {
+
 Index
-RandomHandIndex(const Content & content)
+RandomIndex(Index size)
 {
     const unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine engine(seed);
-    return std::uniform_int_distribution<>(0, content.GetHand().Size())(engine);
+    return std::uniform_int_distribution<>(0, size)(engine);
+}
+
+}
+
+Index
+RandomHandIndex(const Content & content)
+{
+    return RandomIndex(content.GetHand().Size());
+}
+
+Index
+RandomDiscardedIndex(const Content & content)
+{
+    return RandomIndex(content.GetDiscarded().Size());
 }
 
 } // namespace cylvionpp

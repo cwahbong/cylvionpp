@@ -41,8 +41,8 @@ public:
     virtual const Desertions & GetDesertions() const = 0;
     virtual Desertions & GetDesertions() = 0;
 
-    virtual const Stack & GetDiscarded() const = 0;
-    virtual Stack & GetDiscarded() = 0;
+    virtual const Hand & GetDiscarded() const = 0;
+    virtual Hand & GetDiscarded() = 0;
 
     virtual const Stack & GetUndrawn() const = 0;
     virtual Stack & GetUndrawn() = 0;

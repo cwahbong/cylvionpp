@@ -28,6 +28,7 @@ CYLVIONPP_EXPORT std::unique_ptr<Operation> TakeRecuitment(Index col);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> RemoveRecuitment(Index col);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> PlayerDraw(size_t count);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> PlayerDiscardHand(Index idx);
+CYLVIONPP_EXPORT std::unique_ptr<Operation> RemoveFromDiscarded(Index idx);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> DecreaseMana(size_t amount);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> IncreaseMana(size_t amount);
 CYLVIONPP_EXPORT std::unique_ptr<Operation> IncreaseEdge(size_t amount);

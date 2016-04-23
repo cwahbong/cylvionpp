@@ -36,8 +36,8 @@ public:
     const Desertions & GetDesertions() const override { return *_desertions; }
     Desertions & GetDesertions() override { return *_desertions;}
 
-    const Stack & GetDiscarded() const override { return *_discarded; }
-    Stack & GetDiscarded() override { return *_discarded; }
+    const Hand & GetDiscarded() const override { return *_discarded; }
+    Hand & GetDiscarded() override { return *_discarded; }
 
     const Stack & GetUndrawn() const override { return *_undrawn; }
     Stack & GetUndrawn() override { return *_undrawn; }
@@ -50,7 +50,7 @@ private:
     std::array<std::unique_ptr<Stack>, 4> _recuitment;
     std::unique_ptr<Stack> _sylvan;
     std::unique_ptr<Desertions> _desertions;
-    std::unique_ptr<Stack> _discarded;
+    std::unique_ptr<Hand> _discarded;
     std::unique_ptr<Stack> _undrawn;
 };
 
@@ -62,7 +62,7 @@ ContentImpl::ContentImpl():
     _recuitment(),
     _sylvan(Stack::New()),
     _desertions(Desertions::New()),
-    _discarded(Stack::New()),
+    _discarded(Hand::New()),
     _undrawn(Stack::New())
 {
     for (auto && stack: _recuitment) {
